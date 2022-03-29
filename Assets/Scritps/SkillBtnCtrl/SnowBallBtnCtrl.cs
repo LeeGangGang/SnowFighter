@@ -33,6 +33,8 @@ public class SnowBallBtnCtrl : MonoBehaviourPunCallbacks
         if (m_PlayerCtrl.m_CurSnowCnt <= 0)
             return;
 
+        m_PlayerCtrl.MySetAnim(AnimState.Shot);
+
         Vector3 SnowPos = m_PlayerTr.position + m_PlayerTr.forward * 1.5f;
         SnowPos.y += 0.2f;
         Quaternion SnowRot = Quaternion.LookRotation(SnowPos - m_PlayerTr.position);
@@ -40,7 +42,7 @@ public class SnowBallBtnCtrl : MonoBehaviourPunCallbacks
         Shot(SnowPos, SnowRot);
         pv.RPC("Shot", RpcTarget.Others, SnowPos, SnowRot);
 
-        int a_SnowCnt = m_PlayerCtrl.m_CurSnowCnt - 1;
+        int a_SnowCnt = m_PlayerCtrl.m_CurSnowCnt--;
         m_PlayerCtrl.SendSnowCnt(a_SnowCnt);
     }
 

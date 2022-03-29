@@ -120,9 +120,7 @@ public class PhotonInit : MonoBehaviourPunCallbacks  //MonoBehaviour
         string userId = PlayerPrefs.GetString("USER_ID");
 
         if (string.IsNullOrEmpty(userId))
-        {
             userId = "USER_" + Random.Range(0, 999).ToString("000");
-        }
 
         return userId;
     }
