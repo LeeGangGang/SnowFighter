@@ -2,14 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SnowBallCtrl : MonoBehaviour, IDamageCtrl
+public class SnowBallCtrl : MonoBehaviour
 {
-    SnowData m_SnowData = new SnowData();
-    public void Init()
+    private SnowData m_SnowData = new SnowData();
+    public SnowData SnowData
     {
-        m_SnowData.m_MaxHp = 10;
-        m_SnowData.m_CurHp = m_SnowData.m_MaxHp;
-        m_SnowData.m_Attck = 20;
+        get { return m_SnowData; }
+        set { m_SnowData = value; }
     }
 
     public float Speed = 1000.0f;
@@ -30,20 +29,6 @@ public class SnowBallCtrl : MonoBehaviour, IDamageCtrl
         GetComponent<Rigidbody>().AddForce(transform.forward * Speed);
     }
 
-    private void OnTriggerEnter(Collider other)
-    {
-        //if (other.gameObject.name.Contains("Player"))
-        //    return;
-
-        IDamageCtrl a_ISnow = other.gameObject.GetComponent<IDamageCtrl>();
-        if (a_ISnow != null)
-        {
-            a_ISnow.GetDamage(m_SnowData.m_Attck);
-        }
-
-        DestroyThisObj();
-    }
-
     IEnumerator DestroySnowBall(float tm)
     {
         yield return new WaitForSeconds(tm);
@@ -59,22 +44,37 @@ public class SnowBallCtrl : MonoBehaviour, IDamageCtrl
         Destroy(this.gameObject, 0.0f);
     }
 
-    public void GetDamage(float a_Damaage)
+    void OnTriggerEnter(Collider other)
     {
-        m_SnowData.m_CurHp -= a_Damaage;
 
-        if (m_SnowData.m_CurHp <= 0.0f)
-            DestroyThisObj();
     }
 
-    public float SetDamage()
+    public void Init()
     {
-        Debug.Log("½º³ë¿ì 10.0f");
-        return m_SnowData.m_Attck;
+        m_SnowData.m_MaxHp = 10;
+        m_SnowData.m_CurHp = m_SnowData.m_MaxHp;
+        m_SnowData.m_Attck = 20;
     }
-
     public void DestroyThisObj()
     {
         StartCoroutine(this.DestroySnowBall(0.0f));
     }
+
+    //public bool IsMyTeam(int a_Team)
+    //{
+    //    bool IsMyTeam = false;
+
+    //    if (a_Team == m_SnowData.AttackerTeam)
+    //        IsMyTeam = true;
+
+    //    return IsMyTeam;
+    //}
+
+    //public void GetDamage(float a_Dmg, int a_AttackerId)
+    //{
+    //    m_SnowData.m_CurHp -= a_Dmg;
+
+    //    if (m_SnowData.m_CurHp <= 0.0f)
+    //        DestroyThisObj();
+    //}
 }

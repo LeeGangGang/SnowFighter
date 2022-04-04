@@ -16,13 +16,17 @@ public enum AnimState
     count
 }
 
-public class PlayerCtrl : MonoBehaviourPunCallbacks, IPunObservable, IDamageCtrl
+public class PlayerCtrl : MonoBehaviourPunCallbacks, IPunObservable
 {
+    [HideInInspector] public int m_MyTeam = -1;
+    [HideInInspector] public int m_PlayerId = -1;
+
     //------ Animator 관련 변수 
     [HideInInspector] public Animator m_Anim;
     [HideInInspector] public AnimState m_CurAnimState = AnimState.Idle;
     AnimState m_NetAnimState = AnimState.Idle;
 
+    public bool m_MovePossible = true; // 이동 가능한지 여부
     private Transform tr;
     private Vector3 moveDir = Vector3.zero;
     private float moveSpeed = 150.0f;
@@ -34,11 +38,12 @@ public class PlayerCtrl : MonoBehaviourPunCallbacks, IPunObservable, IDamageCtrl
     [HideInInspector] public Image m_HpBarImg = null;
     [HideInInspector] public float m_CurHp = 200.0f;
     [HideInInspector] public float m_MaxHp = 200.0f;
+    [HideInInspector] public float m_NetHp = 200.0f;
     // -----------------------------
 
     ExitGames.Client.Photon.Hashtable SnowCntProps = new ExitGames.Client.Photon.Hashtable();
-    [HideInInspector] public int m_CurSnowCnt = 0; // 현재 가지고 있는 눈덩이 갯수
-    [HideInInspector] public int m_MaxSnowCnt = 10; // 최대 가질수 있는 눈덩이 갯수
+    [HideInInspector] public int m_CurSnowCnt = 100; // 현재 가지고 있는 눈덩이 갯수
+    [HideInInspector] public int m_MaxSnowCnt = 100; // 최대 가질수 있는 눈덩이 갯수
 
     //위치 정보를 송수신할 때 사용할 변수 선언 및 초깃값 설정
     private Vector3 m_CurPos = Vector3.zero;
@@ -47,9 +52,12 @@ public class PlayerCtrl : MonoBehaviourPunCallbacks, IPunObservable, IDamageCtrl
     //PhotonView 컴포넌트를 할당할 변수
     [HideInInspector] public PhotonView pv = null;
 
+    public Text m_NickName;
+
     void Awake()
     {
-        m_MaxSnowCnt = 10;
+        m_MaxSnowCnt = 100;
+        m_CurSnowCnt = 100;
 
         //컴포넌트 할당
         tr = GetComponent<Transform>();
@@ -79,8 +87,25 @@ public class PlayerCtrl : MonoBehaviourPunCallbacks, IPunObservable, IDamageCtrl
 
         // Photon Client 동기화
         NetworkTransform_Update();
+        NetworkCurHp_Update();
         NetworkAnimState_Update();
         NetworkSnowCnt_Update();
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.name.Contains("SnowBall"))
+        {
+            SnowBallCtrl a_Snow = other.gameObject.GetComponent<SnowBallCtrl>();
+            if (a_Snow != null)
+            {
+                if (IsMyTeam(a_Snow.SnowData.AttackerTeam) == false)
+                {
+                    GetDamage(a_Snow.SnowData.m_Attck, a_Snow.SnowData.AttackerId);
+                    a_Snow.DestroyThisObj();
+                }
+            }
+        }
     }
 
     public void Init()
@@ -89,40 +114,57 @@ public class PlayerCtrl : MonoBehaviourPunCallbacks, IPunObservable, IDamageCtrl
         moveSpeed = 150.0f;
         controller = GetComponent<CharacterController>();
 
-        if (pv != null && pv.IsMine == true)
+        if (pv != null)
         {
-            SnowCntProps.Clear();
-            SnowCntProps.Add("SnowCnt", 0);
-            pv.Owner.SetCustomProperties(SnowCntProps);
+            m_PlayerId = pv.Owner.ActorNumber;
+
+            if (pv.Owner.CustomProperties.ContainsKey("MyTeam") == true)
+                m_MyTeam = (int)pv.Owner.CustomProperties["MyTeam"];
+
+            if (m_MyTeam == 0)
+            {
+                m_NickName.text = "Red팀 : " + m_PlayerId.ToString();
+                m_NickName.color = Color.red;
+            }
+            else
+            {
+                m_NickName.text = "Blue팀 : " + m_PlayerId.ToString();
+                m_NickName.color = Color.blue;
+            }
+
+            if (pv.IsMine == true)
+            {
+                SnowCntProps.Clear();
+                SnowCntProps.Add("SnowCnt", 0);
+                pv.Owner.SetCustomProperties(SnowCntProps);
+            }
         }
     }
 
-    public float SetDamage()
+    public bool IsMyTeam(int a_Team)
     {
-        throw new System.NotImplementedException();
+        bool IsMyTeam = false;
+        if (pv.IsMine == false)
+            return IsMyTeam;
+
+        if (a_Team == m_MyTeam)
+            IsMyTeam = true;
+
+        return IsMyTeam;
     }
 
-    public void DestroyThisObj()
+    public void GetDamage(float a_Dmg, int a_AttackerId)
     {
-        throw new System.NotImplementedException();
-    }
-
-    public void GetDamage(float a_Dmg)
-    {
-        if (pv.IsMine)
+        if (pv.IsMine == false)
             return;
 
-        pv.RPC("GetDamageRPC", RpcTarget.All, a_Dmg);
-    }
+        if (m_PlayerId == a_AttackerId)
+            return;
 
-    [PunRPC]
-    public void GetDamageRPC(float a_Dmg)
-    {
         if (m_CurHp <= 0.0f)
             return;
 
         m_CurHp -= a_Dmg;
-
         m_HpBarImg.fillAmount = (float)m_CurHp / (float)m_MaxHp;
 
         if (m_HpBarImg.fillAmount <= 0.4f)
@@ -137,7 +179,12 @@ public class PlayerCtrl : MonoBehaviourPunCallbacks, IPunObservable, IDamageCtrl
 
         if (m_CurHp <= 0)
         {
-            Debug.Log("쥭음");
+            MySetAnim(AnimState.Die);
+            controller.enabled = false;
+        }
+        else
+        {
+            MySetAnim(AnimState.Hit);
         }
     }
 
@@ -149,36 +196,60 @@ public class PlayerCtrl : MonoBehaviourPunCallbacks, IPunObservable, IDamageCtrl
             moveDir = Vector3.zero;
     }
 
-    public void MySetAnim(AnimState newAnim, float CrossTime = 1.0f)
+    public bool IsAction()
+    {
+        if (m_prevState != null && !string.IsNullOrEmpty(m_prevState))
+        {
+            if (m_prevState.ToString() == AnimState.Hit.ToString() ||
+                m_prevState.ToString() == AnimState.Die.ToString() ||
+                m_prevState.ToString() == AnimState.Shot.ToString() ||
+                m_prevState.ToString() == AnimState.Gather.ToString())
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public string m_prevState = "";
+    public void MySetAnim(AnimState newAnim)
     {
         if (m_Anim == null)
             return;
 
-        if (m_CurAnimState.ToString() == newAnim.ToString())
-            return;
-
-        m_Anim.ResetTrigger(m_CurAnimState.ToString());
-
-        if (0.0f < CrossTime)
+        if (m_prevState != null && !string.IsNullOrEmpty(m_prevState))
         {
-            m_Anim.SetTrigger(newAnim.ToString());
-        }
-        else
-        {
-            m_Anim.Play(newAnim.ToString(), -1, 0f);
+            if (m_prevState.ToString() == newAnim.ToString())
+                return;
         }
 
+        if (!string.IsNullOrEmpty(m_prevState))
+        {
+            m_Anim.ResetTrigger(m_prevState.ToString());
+            m_prevState = null;
+        }
+        
+        m_Anim.SetTrigger(newAnim.ToString());
+
+        m_prevState = newAnim.ToString(); //이전스테이트에 현재스테이트 저장
         m_CurAnimState = newAnim;
     }
 
     private void Move_Update()
     {
+        if (GameMgr.Inst.m_GameState != GameState.GS_Playing) // 게임중이 아니면
+            return;
+
         if (pv.IsMine)
         {  //자신이 만든 네트워크 게임오브젝트인 경우에만 키보드 조작 루틴 적용
+            if (m_MovePossible == false)
+                return;
+
             if (100.0f < tr.position.y)
             {
                 float pos = Random.Range(-100.0f, 100.0f);
-                tr.position = new Vector3(pos, 5.0f, pos);
+                tr.position = new Vector3(pos, 3.0f, pos);
                 return;
             }
 
@@ -192,7 +263,7 @@ public class PlayerCtrl : MonoBehaviourPunCallbacks, IPunObservable, IDamageCtrl
             }
             else
             {
-                if (m_CurAnimState != AnimState.Gather && m_CurAnimState != AnimState.Shot)
+                if (IsAction() == false)
                     MySetAnim(AnimState.Idle);
             }
         }
@@ -212,6 +283,28 @@ public class PlayerCtrl : MonoBehaviourPunCallbacks, IPunObservable, IDamageCtrl
         tr.rotation = Quaternion.Slerp(tr.rotation, m_CurRot, Time.deltaTime * 10.0f);
     }
 
+    void NetworkCurHp_Update()
+    {
+        if (pv.IsMine)
+            return;
+
+        if (0 < m_CurHp)
+        {
+            m_CurHp = m_NetHp;
+            m_HpBarImg.fillAmount = (float)m_CurHp / (float)m_MaxHp;
+
+            if (m_HpBarImg.fillAmount <= 0.4f)
+                m_HpBarImg.color = Color.red;
+            else if (m_HpBarImg.fillAmount <= 0.6f)
+                m_HpBarImg.color = Color.yellow;
+            else
+                m_HpBarImg.color = Color.green;
+
+            if (m_CurHp <= 0)
+                m_CurHp = 0;
+        }
+    }
+
     private void NetworkAnimState_Update()
     {
         if (pv.IsMine)
@@ -219,7 +312,6 @@ public class PlayerCtrl : MonoBehaviourPunCallbacks, IPunObservable, IDamageCtrl
 
         MySetAnim(m_NetAnimState);
     }
-
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
@@ -229,12 +321,16 @@ public class PlayerCtrl : MonoBehaviourPunCallbacks, IPunObservable, IDamageCtrl
             stream.SendNext(tr.position);
             stream.SendNext(tr.rotation);
 
+            stream.SendNext(m_CurHp);
+
             stream.SendNext(m_CurAnimState);
         }
         else //원격 플레이어의 위치 정보 수신
         {
             m_CurPos = (Vector3)stream.ReceiveNext();
             m_CurRot = (Quaternion)stream.ReceiveNext();
+
+            m_NetHp = (float)stream.ReceiveNext();
 
             m_NetAnimState = (AnimState)stream.ReceiveNext();
         }

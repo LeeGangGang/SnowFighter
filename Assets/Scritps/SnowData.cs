@@ -7,14 +7,9 @@ public class SnowData
     public float m_CurHp = 0;
 
     public float m_Attck = 0;
-}
 
-interface IDamageCtrl
-{
-    public void Init();
-
-    public void GetDamage(float a_Damaage);
-    public float SetDamage();
-
-    public void DestroyThisObj();
+    // 공격한한 플레이어의 ID 저장
+    public int AttackerId = -1;
+    // 공격한 플레이어의 팀
+    public int AttackerTeam = -1;
 }

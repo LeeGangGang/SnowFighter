@@ -29,6 +29,7 @@ public class CreateRoomMgr : MonoBehaviour
     {
         string a_roomName = m_RoomName_If.text; // roomName.text;
         string a_playerName = MyPlayerInfo.g_Name;
+        Debug.Log("name : " + a_playerName);
         // 물 이름이 없거나 Null일 경우 룸이름 지정
         if (string.IsNullOrEmpty(a_roomName))
         {
@@ -44,7 +45,7 @@ public class CreateRoomMgr : MonoBehaviour
         RoomOptions roomOptions = new RoomOptions(); // using Photon.Realtime;
         roomOptions.IsOpen = true;  // 입장 가능 여부
         roomOptions.IsVisible = true;   // 로비에서 룸의 노출 여부
-        roomOptions.MaxPlayers = 20; // 룸에 입장할 수 있는 최대 접속자 수
+        roomOptions.MaxPlayers = 8; // 룸에 입장할 수 있는 최대 접속자 수
 
         // 지정한 조건에 맞는 룸 생성 함수
         PhotonNetwork.CreateRoom(a_roomName, roomOptions, TypedLobby.Default);

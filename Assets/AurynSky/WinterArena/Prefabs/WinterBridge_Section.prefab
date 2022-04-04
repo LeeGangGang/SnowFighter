@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 8484288286113410823}
   - component: {fileID: 3310312879604169382}
   - component: {fileID: 8104083293852127695}
-  - component: {fileID: 3462059997683012661}
   - component: {fileID: 8421537922777915375}
   m_Layer: 0
   m_Name: WinterBridge_Section
@@ -83,20 +82,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &3462059997683012661
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8135906744628599524}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 4
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 4300000, guid: 4fe47052fe4d4434da8e9bd6104dc23c, type: 3}
 --- !u!65 &8421537922777915375
 BoxCollider:
   m_ObjectHideFlags: 0

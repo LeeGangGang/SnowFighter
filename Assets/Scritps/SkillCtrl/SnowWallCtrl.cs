@@ -1,15 +1,9 @@
 using System.Collections;
 using UnityEngine;
 
-public class SnowWallCtrl : MonoBehaviour, IDamageCtrl
+public class SnowWallCtrl : MonoBehaviour
 {
     SnowData m_SnowData = new SnowData();
-    public void Init()
-    {
-        m_SnowData.m_MaxHp = 100;
-        m_SnowData.m_CurHp = m_SnowData.m_MaxHp;
-        m_SnowData.m_Attck = 0;
-    }
 
     private BoxCollider _collider = null;
 
@@ -34,17 +28,28 @@ public class SnowWallCtrl : MonoBehaviour, IDamageCtrl
         Destroy(this.gameObject, 0.0f);
     }
 
-    public void GetDamage(float a_Damaage)
+    public void Init()
     {
-        m_SnowData.m_CurHp -= a_Damaage;
+        m_SnowData.m_MaxHp = 100;
+        m_SnowData.m_CurHp = m_SnowData.m_MaxHp;
+        m_SnowData.m_Attck = 0;
+    }
+    public bool IsMyTeam(int a_Team)
+    {
+        bool IsMyTeam = false;
+
+        if (a_Team == m_SnowData.AttackerTeam)
+            IsMyTeam = true;
+
+        return IsMyTeam;
+    }
+
+    public void GetDamage(float a_Dmg, int a_AttackerId)
+    {
+        m_SnowData.m_CurHp -= a_Dmg;
 
         if (m_SnowData.m_CurHp <= 0.0f)
             DestroyThisObj();
-    }
-
-    public float SetDamage()
-    {
-        return 0;
     }
 
     public void DestroyThisObj()

@@ -6,22 +6,28 @@ using UnityEngine.EventSystems;
 
 public class SnowWallBtnCtrl : MonoBehaviour
 {
-    public GameObject m_SnowWallPrefab;
+    private Button m_ThisBtn;
+    public Image m_SkillCoolImg;
 
     private PlayerCtrl m_PlayerCtrl;
+    private PlayerSkillCtrl m_SkillCtrl;
     private Transform m_PlayerTr;
 
-    private bool m_IsCasting = false; // 캐스팅중
-    private float m_CastTime = 1.5f; // 캐스트 필요시간
-    private float m_CurCastTime = 1.5f; // 현재 캐스트 시간
+    [HideInInspector] bool m_IsCasting = false; // 캐스팅중
+    [HideInInspector] float m_CastTime = 1.0f; // 캐스트 필요시간
+    [HideInInspector] float m_CurCastTime = 0.0f; // 현재 캐스트 시간
+
+    [HideInInspector] float m_CoolTime = 0.5f; // 쿨타임
+    [HideInInspector] float m_CurCoolTime = 0.0f; // 현재 쿨타임
 
     // Start is called before the first frame update
     void Start()
     {
-        m_CurCastTime = m_CastTime;
-
         m_PlayerCtrl = Camera.main.GetComponent<CameraCtrl>().Player.GetComponent<PlayerCtrl>();
+        m_SkillCtrl = Camera.main.GetComponent<CameraCtrl>().Player.GetComponent<PlayerSkillCtrl>();
         m_PlayerTr = Camera.main.GetComponent<CameraCtrl>().Player.transform;
+
+        m_ThisBtn = GetComponent<Button>();
 
         EventTrigger eventTrigger = gameObject.AddComponent<EventTrigger>();
         EventTrigger.Entry entry_PointerDown = new EventTrigger.Entry();
@@ -38,16 +44,43 @@ public class SnowWallBtnCtrl : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (m_IsCasting)
+        if (GameMgr.Inst.m_GameState != GameState.GS_Playing) // 게임중이 아니면
+            return;
+
+        CoolTime_Update();
+
+        if (m_ThisBtn.enabled) // 쿨타임중이 아닐때
         {
-            m_CurCastTime -= Time.deltaTime;
-            if (m_CurCastTime <= 0.0f)
+            if (m_IsCasting) // 캐스팅중이라면
             {
-                CreateSnowWall();
+                if (m_PlayerCtrl == null || m_SkillCtrl == null || m_PlayerTr == null)
+                    return;
+
+                if (m_PlayerCtrl.m_CurSnowCnt <= 0)
+                    return;
+
+                if (m_PlayerCtrl.m_CurAnimState != AnimState.Gather)
+                    m_PlayerCtrl.MySetAnim(AnimState.Gather);
+
+                m_CurCastTime += Time.deltaTime;
+                GameMgr.Inst.CastingBar(true, "눈벽 설치", m_CurCastTime, m_CastTime);
+                if (m_CurCastTime >= m_CastTime)
+                {
+                    m_CurCastTime = 0.0f;
+                    m_CurCoolTime = m_CoolTime;
+                    GameMgr.Inst.CastingBar(false);
+                    Vector3 WallPos = m_PlayerTr.position + m_PlayerTr.forward;
+                    WallPos.y -= 1.5f;
+                    Quaternion WallRot = m_PlayerTr.rotation;
+
+                    m_SkillCtrl.CreateSnowWall(WallPos, WallRot);
+
+                    if (m_PlayerCtrl.m_CurAnimState != AnimState.Idle)
+                        m_PlayerCtrl.MySetAnim(AnimState.Idle);
+                }
             }
         }
     }
-
     void OnPointerDown(PointerEventData pointerEventData)
     {
         m_IsCasting = true;
@@ -55,20 +88,30 @@ public class SnowWallBtnCtrl : MonoBehaviour
 
     void OnPointerUp(PointerEventData pointerEventData)
     {
+        m_PlayerCtrl.MySetAnim(AnimState.Idle);
+        m_PlayerCtrl.m_MovePossible = true;
         m_IsCasting = false;
-        m_CurCastTime = m_CastTime;
+        m_CurCastTime = 0.0f;
+        GameMgr.Inst.CastingBar(false);
     }
 
-    private void CreateSnowWall()
+    void CoolTime_Update()
     {
-        if (m_PlayerCtrl == null || m_PlayerTr == null ||
-            m_SnowWallPrefab == null)
-            return;
+        if (0.0f < m_CurCoolTime)
+        {
+            m_CurCoolTime -= Time.deltaTime;
+            m_SkillCoolImg.fillAmount = m_CurCoolTime / m_CoolTime;
+            //Cool_Label.text = ((int)Cool_float).ToString();
 
-        Vector3 WallPos = m_PlayerTr.position + m_PlayerTr.forward;
-        WallPos.y -= 1.5f;
-        GameObject a_SnowWall = GameObject.Instantiate(m_SnowWallPrefab, WallPos, m_PlayerTr.rotation);
-        
-        m_CurCastTime = m_CastTime;
+            m_ThisBtn.enabled = false;
+        }
+        else
+        {
+            m_CurCoolTime = 0.0f;
+            m_SkillCoolImg.fillAmount = 0.0f;
+            //Cool_Label.text = "";
+
+            m_ThisBtn.enabled = true;
+        }
     }
 }

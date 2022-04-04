@@ -57,14 +57,17 @@
     <Compile Include="Assets\Scritps\SkillBtnCtrl\SnowWallBtnCtrl.cs" />
     <Compile Include="Assets\Photon\PhotonLibs\WebSocket\WebSocket.cs" />
     <Compile Include="Assets\Photon\PhotonChat\Demos\Common\TextButtonTransition.cs" />
+    <Compile Include="Assets\Scritps\scRoom\RoomMgr.cs" />
     <Compile Include="Assets\Photon\PhotonLibs\WebSocket\SocketWebTcp.cs" />
     <Compile Include="Assets\Scritps\MyPlayerInfo.cs" />
+    <Compile Include="Assets\Frost\FrostEffect.cs" />
     <Compile Include="Assets\Scritps\SkillCtrl\SnowBallCtrl.cs" />
     <Compile Include="Assets\Photon\PhotonChat\Demos\DemoChat\ChatAppIdCheckerUI.cs" />
     <Compile Include="Assets\Photon\PhotonChat\Demos\DemoChat\AppSettingsExtensions.cs" />
     <Compile Include="Assets\Scritps\scInGame\GameMgr.cs" />
     <Compile Include="Assets\Photon\PhotonChat\Demos\DemoChat\NamePickGui.cs" />
     <Compile Include="Assets\AurynSky\WinterArena\Scripts\Rotator.cs" />
+    <Compile Include="Assets\Scritps\PlayerAnimEvent.cs" />
     <Compile Include="Assets\Scritps\PlayerCtrl.cs" />
     <Compile Include="Assets\Photon\PhotonChat\Demos\DemoChat\ChannelSelector.cs" />
     <Compile Include="Assets\Scritps\SnowData.cs" />
@@ -73,9 +76,11 @@
     <Compile Include="Assets\Photon\PhotonChat\Demos\DemoChat\IgnoreUiRaycastWhenInactive.cs" />
     <Compile Include="Assets\Scritps\SkillBtnCtrl\AddSnowBtnCtrl.cs" />
     <Compile Include="Assets\Photon\PhotonChat\Demos\Common\EventSystemSpawner.cs" />
+    <Compile Include="Assets\Scritps\scInGame\IndividualGameMgr.cs" />
     <Compile Include="Assets\Scritps\scLobby\RoomData.cs" />
     <Compile Include="Assets\Photon\PhotonChat\Demos\DemoChat\FriendItem.cs" />
     <Compile Include="Assets\Scritps\BillBoard.cs" />
+    <Compile Include="Assets\Scritps\scInGame\TeamGameMgr.cs" />
     <Compile Include="Assets\Scritps\SkillBtnCtrl\SnowBowlingBtnCtrl.cs" />
     <Compile Include="Assets\Photon\PhotonChat\Demos\DemoChat\ChatGui.cs" />
     <Compile Include="Assets\Photon\PhotonChat\Demos\Common\TextToggleIsOnTransition.cs" />
@@ -85,10 +90,11 @@
     <Compile Include="Assets\Scritps\scInGame\JoyStickCtrl.cs" />
     <Compile Include="Assets\Scritps\scLobby\CreateRoomMgr.cs" />
     <Compile Include="Assets\AurynSky\WinterArena\Scripts\ChestDemo.cs" />
-    <Compile Include="Assets\Scritps\PlayerAnimEvent.cs" />
+    <Compile Include="Assets\Scritps\PlayerSkillCtrl.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Photon\PhotonLibs\netstandard2.0\Photon3Unity3D.xml" />
+    <None Include="Assets\Frost\HowToUse.txt" />
     <None Include="Assets\Photon\PhotonUnityNetworking\changelog.txt" />
     <None Include="Assets\Photon\PhotonLibs\WebSocket\websocket-sharp.dll" />
     <None Include="Assets\Photon\PhotonLibs\changes-library.txt" />
@@ -97,6 +103,7 @@
     <None Include="Assets\Photon\PhotonLibs\Photon3Unity3D.dll" />
     <None Include="Assets\AurynSky\WinterArena\READ ME.txt" />
     <None Include="Assets\Photon\PhotonLibs\Metro\Photon3Unity3D.dll" />
+    <None Include="Assets\Frost\ImageBlendEffect.shader" />
     <None Include="Assets\Photon\PhotonLibs\Photon3Unity3D.xml" />
     <None Include="Assets\Photon\PhotonUnityNetworking\link.xml" />
   </ItemGroup>

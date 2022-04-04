@@ -6,6 +6,7 @@ TagManager:
   tags:
   - SnowBall
   - SnowWall
+  - ROOM_ITEM
   layers:
   - Default
   - TransparentFX

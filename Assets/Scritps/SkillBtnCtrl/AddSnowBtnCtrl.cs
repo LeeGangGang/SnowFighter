@@ -4,25 +4,28 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-public class AddSnowData
-{
-    public bool m_IsCasting = false; // 캐스팅중
-    public float m_CastTime = 1.0f; // 캐스트 필요시간
-    public float m_CurCastTime = 1.0f; // 현재 캐스트 시간
-}
-
 public class AddSnowBtnCtrl : MonoBehaviour
 {
     private PlayerCtrl m_PlayerCtrl;
-    private AddSnowData m_Data = new AddSnowData();
+
+    private Button m_ThisBtn;
+    public Image m_SkillCoolImg;
+
+    [HideInInspector] bool m_IsCasting = false; // 캐스팅중
+    [HideInInspector] float m_CastTime = 1.0f; // 캐스트 필요시간
+    [HideInInspector] float m_CurCastTime = 0.0f; // 현재 캐스트 시간
+
+    [HideInInspector] float m_CoolTime = 1.0f; // 쿨타임
+    [HideInInspector] float m_CurCoolTime = 0.0f; // 현재 쿨타임
 
     // Start is called before the first frame update
     void Start()
     {
         m_PlayerCtrl = Camera.main.GetComponent<CameraCtrl>().Player.GetComponent<PlayerCtrl>();
 
-        m_Data.m_CastTime = m_PlayerCtrl.m_Anim.runtimeAnimatorController.animationClips[(int)AnimState.Gather].length;
-        m_Data.m_CurCastTime = m_Data.m_CastTime;
+        m_ThisBtn = GetComponent<Button>();
+
+        m_CastTime = m_PlayerCtrl.m_Anim.runtimeAnimatorController.animationClips[(int)AnimState.Gather].length;
 
         EventTrigger eventTrigger = gameObject.AddComponent<EventTrigger>();
         EventTrigger.Entry entry_PointerDown = new EventTrigger.Entry();
@@ -39,36 +42,67 @@ public class AddSnowBtnCtrl : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (m_Data.m_IsCasting)
-        {
-            int a_MaxSnowCnt = m_PlayerCtrl.m_MaxSnowCnt;
-            int a_CurSnowCnt = m_PlayerCtrl.m_CurSnowCnt;
-            Debug.Log(string.Format("1 {0} / {1}", a_MaxSnowCnt, a_CurSnowCnt));
-            if (a_MaxSnowCnt <= a_CurSnowCnt)
-                return;
-            if (m_PlayerCtrl.m_CurAnimState != AnimState.Gather)
-                m_PlayerCtrl.MySetAnim(AnimState.Gather);
-            
-            m_Data.m_CurCastTime -= Time.deltaTime;
+        if (GameMgr.Inst.m_GameState != GameState.GS_Playing) // 게임중이 아니면
+            return;
 
-            if (m_Data.m_CurCastTime <= 0.0f)
+        CoolTime_Update();
+
+        if (m_ThisBtn.enabled) // 쿨타임중이 아닐때
+        {
+            if (m_IsCasting) // 캐스팅중이라면
             {
-                //int a_SnowCnt = m_PlayerCtrl.m_CurSnowCnt++;
-                //m_PlayerCtrl.SendSnowCnt(a_SnowCnt);
-                m_Data.m_CurCastTime = m_Data.m_CastTime;
+                int a_MaxSnowCnt = m_PlayerCtrl.m_MaxSnowCnt;
+                int a_CurSnowCnt = m_PlayerCtrl.m_CurSnowCnt;
+
+                if (a_MaxSnowCnt <= a_CurSnowCnt)
+                    return;
+
+                if (m_PlayerCtrl.m_CurAnimState != AnimState.Gather)
+                    m_PlayerCtrl.MySetAnim(AnimState.Gather);
+
+                m_CurCastTime += Time.deltaTime;
+                GameMgr.Inst.CastingBar(true, "눈 뭉치기", m_CurCastTime, m_CastTime);
+                if (m_CurCastTime >= m_CastTime)
+                {
+                    m_CurCastTime = 0.0f;
+                    m_CurCoolTime = m_CoolTime;
+                    GameMgr.Inst.CastingBar(false);
+                }
             }
         }
     }
 
     void OnPointerDown(PointerEventData pointerEventData)
     {
-        m_Data.m_IsCasting = true;
+        m_IsCasting = true;
     }
 
     void OnPointerUp(PointerEventData pointerEventData)
     {
         m_PlayerCtrl.MySetAnim(AnimState.Idle);
-        m_Data.m_IsCasting = false;
-        m_Data.m_CurCastTime = m_Data.m_CastTime;
+        m_PlayerCtrl.m_MovePossible = true;
+        m_IsCasting = false;
+        m_CurCastTime = 0.0f;
+        GameMgr.Inst.CastingBar(false);
+    }
+
+    void CoolTime_Update()
+    {
+        if (0.0f < m_CurCoolTime)
+        {
+            m_CurCoolTime -= Time.deltaTime;
+            m_SkillCoolImg.fillAmount = m_CurCoolTime / m_CoolTime;
+            //Cool_Label.text = ((int)Cool_float).ToString();
+            
+            m_ThisBtn.enabled = false;
+        }
+        else
+        {
+            m_CurCoolTime = 0.0f;
+            m_SkillCoolImg.fillAmount = 0.0f;
+            //Cool_Label.text = "";
+            
+            m_ThisBtn.enabled = true;
+        }
     }
 }

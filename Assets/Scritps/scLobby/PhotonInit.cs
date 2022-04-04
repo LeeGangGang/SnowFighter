@@ -40,6 +40,8 @@ public class PhotonInit : MonoBehaviourPunCallbacks  //MonoBehaviour
 
         //사용자 이름 설정
         m_PlayerName_Txt.text = GetUserId();
+        
+        PhotonNetwork.IsMessageQueueRunning = true;
     }
 
     // Start is called before the first frame update
@@ -83,8 +85,13 @@ public class PhotonInit : MonoBehaviourPunCallbacks  //MonoBehaviour
     {
         Debug.Log("랜덤 방 참가 실패 (참가할 방이 존재하지 않습니다.)");
 
+        RoomOptions roomOptions = new RoomOptions(); // using Photon.Realtime;
+        roomOptions.IsOpen = true;  // 입장 가능 여부
+        roomOptions.IsVisible = true;   // 로비에서 룸의 노출 여부
+        roomOptions.MaxPlayers = 8; // 룸에 입장할 수 있는 최대 접속자 수
+
         //지정한 조건에 맞는 룸 생성 함수
-        PhotonNetwork.CreateRoom("MyRoom");
+        PhotonNetwork.CreateRoom("MyRoom", roomOptions, TypedLobby.Default);
         // 방이 없을 때는 내가 방을 만들고 입장해 버린다.
         //(서버 역할의 Client는 이쪽으로 접속하게 될 것이다.)
     }
@@ -96,10 +103,8 @@ public class PhotonInit : MonoBehaviourPunCallbacks  //MonoBehaviour
     {  //서버역할인 경우 5번 : 방입장, 클라이언트 역할인 경우 4번 : 방입장
         Debug.Log("방 참가 완료");
 
-        //탱크를 생성하는 함수 호출
-        //CreateTank();  //<---- 테스트 코드
         //룸 씬으로 이동하는 코루틴 실행
-        StartCoroutine(this.LoadSampleScene());
+        StartCoroutine(this.LoadRoomScene());
     }
 
     void OnGUI()
@@ -138,15 +143,12 @@ public class PhotonInit : MonoBehaviourPunCallbacks  //MonoBehaviour
     }
 
     //룸 씬으로 이동하는 코루틴 함수
-    IEnumerator LoadSampleScene() //최종 배틀필드 씬 로딩 --> 6번 or 5번
+    IEnumerator LoadRoomScene() //최종 InGame 씬 로딩 --> 6번 or 5번
     {
         //씬을 이동하는 동안 포톤 클라우드 서버로부터 네트워크 메시지 수신 중단
         PhotonNetwork.IsMessageQueueRunning = false;
-        //백그라운드로 씬 로딩
 
-        Time.timeScale = 1.0f;  //게임에 들어갈 때는 원래 속도로...
-
-        AsyncOperation ao = SceneManager.LoadSceneAsync("SampleScene");
+        AsyncOperation ao = SceneManager.LoadSceneAsync("RoomScene");
 
         yield return ao;
     }
@@ -190,9 +192,13 @@ public class PhotonInit : MonoBehaviourPunCallbacks  //MonoBehaviour
         }
 
         // 룸 목록을 다시 받았을 때 갱신하기 위해 기존에 생성된 RoomItem을 삭제
-        foreach (GameObject obj in GameObject.FindGameObjectsWithTag("ROOM_ITEM"))
+        GameObject[] ROOM_ITEM = GameObject.FindGameObjectsWithTag("ROOM_ITEM");
+        if (ROOM_ITEM.Length > 0)
         {
-            Destroy(obj);
+            foreach (GameObject obj in ROOM_ITEM)
+            {
+                Destroy(obj);
+            }
         }
 
         // 스크롤 영역 초기화

@@ -14,8 +14,27 @@ public class PlayerAnimEvent : MonoBehaviour
 
     void Event_AddSnow()
     {
+        if (m_PlayerCtrl.pv.IsMine == false)
+            return;
+
         int a_SnowCnt = m_PlayerCtrl.m_CurSnowCnt++;
         m_PlayerCtrl.SendSnowCnt(a_SnowCnt);
+    }
+
+    void Event_StartAnim()
+    {
+        if (m_PlayerCtrl.pv.IsMine == false)
+            return;
+
+        m_PlayerCtrl.m_MovePossible = false;
+    }
+
+    void Event_EndAnim()
+    {
+        if (m_PlayerCtrl.pv.IsMine == false)
+            return;
+
+        m_PlayerCtrl.m_MovePossible = true;
         m_PlayerCtrl.MySetAnim(AnimState.Idle);
     }
 }
