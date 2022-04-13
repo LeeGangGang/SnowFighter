@@ -16,8 +16,6 @@ public class SnowBallCtrl : MonoBehaviour
     private SphereCollider _collider = null;
     private Rigidbody _rigidbody = null;
 
-    private Transform tr;
-
     // Start is called before the first frame update
     void Start()
     {
@@ -46,7 +44,14 @@ public class SnowBallCtrl : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
+        if (other.gameObject.name.Contains("Player"))
+        {
+            PlayerCtrl a_Player = other.gameObject.GetComponent<PlayerCtrl>();
+            if (IsMyTeam(a_Player.m_MyTeam))
+                return;
+        }
 
+        DestroyThisObj();
     }
 
     public void Init()
@@ -60,15 +65,15 @@ public class SnowBallCtrl : MonoBehaviour
         StartCoroutine(this.DestroySnowBall(0.0f));
     }
 
-    //public bool IsMyTeam(int a_Team)
-    //{
-    //    bool IsMyTeam = false;
+    public bool IsMyTeam(int a_Team)
+    {
+        bool IsMyTeam = false;
 
-    //    if (a_Team == m_SnowData.AttackerTeam)
-    //        IsMyTeam = true;
+        if (a_Team == m_SnowData.AttackerTeam)
+            IsMyTeam = true;
 
-    //    return IsMyTeam;
-    //}
+        return IsMyTeam;
+    }
 
     //public void GetDamage(float a_Dmg, int a_AttackerId)
     //{

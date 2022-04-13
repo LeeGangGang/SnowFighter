@@ -1,13 +1,25 @@
+using Photon.Pun;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class SnowWallCtrl : MonoBehaviour
 {
-    SnowData m_SnowData = new SnowData();
+    private SnowData m_SnowData = new SnowData();
+    public SnowData SnowData
+    {
+        get { return m_SnowData; }
+        set { m_SnowData = value; }
+    }
+
+    public Image m_HpBarImg = null;
 
     private BoxCollider _collider = null;
 
-    private Transform tr;
+    void Awake()
+    {
+
+    }
 
     // Start is called before the first frame update
     void Start()
@@ -15,6 +27,21 @@ public class SnowWallCtrl : MonoBehaviour
         Init();
 
         _collider = GetComponent<BoxCollider>();
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.name.Contains("SnowBall"))
+        {
+            SnowBallCtrl a_Snow = other.gameObject.GetComponent<SnowBallCtrl>();
+            if (a_Snow != null)
+            {
+                if (IsMyTeam(a_Snow.SnowData.AttackerTeam) == false)
+                    GetDamage(a_Snow.SnowData.m_Attck, a_Snow.SnowData.AttackerId);
+
+                a_Snow.DestroyThisObj();
+            }
+        }
     }
 
     IEnumerator DestroySnowWall(float tm)
@@ -30,10 +57,11 @@ public class SnowWallCtrl : MonoBehaviour
 
     public void Init()
     {
-        m_SnowData.m_MaxHp = 100;
+        m_SnowData.m_MaxHp = 50;
         m_SnowData.m_CurHp = m_SnowData.m_MaxHp;
         m_SnowData.m_Attck = 0;
     }
+
     public bool IsMyTeam(int a_Team)
     {
         bool IsMyTeam = false;
@@ -47,7 +75,7 @@ public class SnowWallCtrl : MonoBehaviour
     public void GetDamage(float a_Dmg, int a_AttackerId)
     {
         m_SnowData.m_CurHp -= a_Dmg;
-
+        UpdateUI_CurHpBar();
         if (m_SnowData.m_CurHp <= 0.0f)
             DestroyThisObj();
     }
@@ -55,5 +83,23 @@ public class SnowWallCtrl : MonoBehaviour
     public void DestroyThisObj()
     {
         StartCoroutine(this.DestroySnowWall(0.0f));
+    }
+
+    void UpdateUI_CurHpBar()
+    {
+        if (0 < m_SnowData.m_CurHp)
+        {
+            m_HpBarImg.fillAmount = (float)m_SnowData.m_CurHp / (float)m_SnowData.m_MaxHp;
+
+            if (m_HpBarImg.fillAmount <= 0.4f)
+                m_HpBarImg.color = Color.red;
+            else if (m_HpBarImg.fillAmount <= 0.6f)
+                m_HpBarImg.color = Color.yellow;
+            else
+                m_HpBarImg.color = Color.green;
+
+            if (m_SnowData.m_CurHp <= 0)
+                m_SnowData.m_CurHp = 0;
+        }
     }
 }

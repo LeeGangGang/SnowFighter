@@ -4,6 +4,11 @@ using UnityEngine;
 using UnityEngine.UI;
 using Photon.Pun;
 
+public enum PlayerState
+{
+
+}
+
 public enum AnimState
 {
     Idle,
@@ -27,15 +32,18 @@ public class PlayerCtrl : MonoBehaviourPunCallbacks, IPunObservable
     AnimState m_NetAnimState = AnimState.Idle;
 
     public bool m_MovePossible = true; // 이동 가능한지 여부
+    public bool m_IsBowling = false; // 눈 굴리기 사용 여부
+    public float m_BowMvSpeed = 200.0f; // 눈굴리기 최소 이동속도 (최대 400)
+
     private Transform tr;
-    private Vector3 moveDir = Vector3.zero;
-    private float moveSpeed = 150.0f;
+    public Vector3 moveDir = Vector3.zero;
+    private float moveSpeed = 200.0f;
     private const float rotSpeed = 3.0f;
 
     private CharacterController controller = null;
 
     // Hp 관련 ---------------------
-    [HideInInspector] public Image m_HpBarImg = null;
+    public Image m_HpBarImg = null;
     [HideInInspector] public float m_CurHp = 200.0f;
     [HideInInspector] public float m_MaxHp = 200.0f;
     [HideInInspector] public float m_NetHp = 200.0f;
@@ -94,9 +102,22 @@ public class PlayerCtrl : MonoBehaviourPunCallbacks, IPunObservable
 
     private void OnTriggerEnter(Collider other)
     {
+        Debug.Log("Hit : " + other.gameObject.name);
         if (other.gameObject.name.Contains("SnowBall"))
         {
             SnowBallCtrl a_Snow = other.gameObject.GetComponent<SnowBallCtrl>();
+            if (a_Snow != null)
+            {
+                if (IsMyTeam(a_Snow.SnowData.AttackerTeam) == false)
+                {
+                    GetDamage(a_Snow.SnowData.m_Attck, a_Snow.SnowData.AttackerId);
+                    a_Snow.DestroyThisObj();
+                }
+            }
+        }
+        else if (other.gameObject.name.Contains("SnowBowling"))
+        {
+            SnowBowlingCtrl a_Snow = other.gameObject.GetComponent<SnowBowlingCtrl>();
             if (a_Snow != null)
             {
                 if (IsMyTeam(a_Snow.SnowData.AttackerTeam) == false)
@@ -253,18 +274,58 @@ public class PlayerCtrl : MonoBehaviourPunCallbacks, IPunObservable
                 return;
             }
 
-            if (controller != null && moveDir != Vector3.zero)
+            if (m_IsBowling)
             {
-                controller.SimpleMove(moveDir.normalized * Time.deltaTime * moveSpeed * 5.0f);
-                Quaternion targetRot = Quaternion.LookRotation(moveDir);
+                // the vector that we want to measure an angle from
+                Vector3 referenceForward = tr.forward; /* some vector that is not Vector3.up */
+                // the vector perpendicular to referenceForward (90 degrees clockwise)
+                // (used to determine if angle is positive or negative)
+                Vector3 referenceRight = Vector3.Cross(Vector3.up, referenceForward);
+                // the vector of interest
+                Vector3 newDirection = moveDir;/* some vector that we're interested in */
+                // Get the angle in degrees between 0 and 180
+                float angle = Vector3.Angle(newDirection, referenceForward);
+                // Determine if the degree value should be negative.  Here, a positive value
+                // from the dot product means that our vector is on the right of the reference vector   
+                // whereas a negative value means we're on the left.
+                float sign = Mathf.Sign(Vector3.Dot(newDirection, referenceRight));
+                float finalAngle = sign * angle;
+
+                float a_MoveAngle = 0.0f;
+                if (finalAngle > 0)
+                    a_MoveAngle = 1.0f;
+                else if (finalAngle < 0)
+                    a_MoveAngle = -1.0f;
+
+                Vector3 a_Rot = tr.rotation.eulerAngles;
+                a_Rot.y += (a_MoveAngle * 15.0f * rotSpeed * Time.deltaTime);
+                if (a_Rot.y > 180.0f)
+                    a_Rot.y -= 360.0f;
+
+                Quaternion targetRot = Quaternion.Euler(a_Rot);
                 tr.rotation = Quaternion.RotateTowards(tr.rotation, targetRot, 360 * rotSpeed * Time.deltaTime);
+                if (controller != null)
+                    controller.SimpleMove(tr.rotation * Vector3.forward * m_BowMvSpeed * 3.0f * Time.deltaTime);
 
                 MySetAnim(AnimState.Run);
+                //Quaternion targetRot = new Quaternion(tr.rotation.x, tr.rotation.y + (a_MoveAngle * 5.0f * Time.deltaTime), tr.rotation.z, tr.rotation.w);
+                //tr.rotation = Quaternion.RotateTowards(tr.rotation, targetRot, 360 * rotSpeed * Time.deltaTime);
             }
             else
             {
-                if (IsAction() == false)
-                    MySetAnim(AnimState.Idle);
+                if (controller != null && moveDir != Vector3.zero)
+                {
+                    Quaternion targetRot = Quaternion.LookRotation(moveDir);
+                    tr.rotation = Quaternion.RotateTowards(tr.rotation, targetRot, 360 * rotSpeed * Time.deltaTime);
+                    controller.SimpleMove(tr.rotation * Vector3.forward * moveSpeed * 3.0f * Time.deltaTime);
+
+                    MySetAnim(AnimState.Run);
+                }
+                else
+                {
+                    if (IsAction() == false)
+                        MySetAnim(AnimState.Idle);
+                }
             }
         }
     }

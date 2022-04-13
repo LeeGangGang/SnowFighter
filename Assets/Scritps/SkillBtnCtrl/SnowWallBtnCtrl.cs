@@ -83,6 +83,7 @@ public class SnowWallBtnCtrl : MonoBehaviour
     }
     void OnPointerDown(PointerEventData pointerEventData)
     {
+        m_PlayerCtrl.m_MovePossible = false;
         m_IsCasting = true;
     }
 

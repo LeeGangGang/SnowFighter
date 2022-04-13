@@ -216,11 +216,11 @@ CharacterController:
   serializedVersion: 2
   m_Height: 1.75
   m_Radius: 0.5
-  m_SlopeLimit: 45
+  m_SlopeLimit: 30
   m_StepOffset: 0.3
-  m_SkinWidth: 0.08
-  m_MinMoveDistance: 0.001
-  m_Center: {x: 0, y: -0.025, z: 0}
+  m_SkinWidth: 0.05
+  m_MinMoveDistance: 0
+  m_Center: {x: 0, y: -0.02, z: 0}
 --- !u!114 &2308130282855090016
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -238,6 +238,9 @@ MonoBehaviour:
   m_Anim: {fileID: 0}
   m_CurAnimState: 0
   m_MovePossible: 1
+  m_IsBowling: 0
+  m_BowMvSpeed: 150
+  moveDir: {x: 0, y: 0, z: 0}
   m_HpBarImg: {fileID: 4937841724130782873}
   m_CurHp: 200
   m_MaxHp: 200
@@ -262,6 +265,7 @@ MonoBehaviour:
   pv: {fileID: 0}
   m_SnowBallPrefab: {fileID: 245866406054031344, guid: 2b5c2a1be793df643be6989f957390ec, type: 3}
   m_SnowWallPrefab: {fileID: 1535624196804196369, guid: d8955b64acc841646969450a5fbb7460, type: 3}
+  m_SnowBowlingPrefab: {fileID: 8289747430620050590, guid: 3df867f91dba72b45a3f0163770c2ed8, type: 3}
 --- !u!114 &8712099063048533901
 MonoBehaviour:
   m_ObjectHideFlags: 0

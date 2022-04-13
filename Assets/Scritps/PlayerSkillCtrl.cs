@@ -10,7 +10,7 @@ public class PlayerSkillCtrl : MonoBehaviour
 
     public GameObject m_SnowBallPrefab;
     public GameObject m_SnowWallPrefab;
-
+    public GameObject m_SnowBowlingPrefab;
 
     void Awake()
     {
@@ -23,6 +23,7 @@ public class PlayerSkillCtrl : MonoBehaviour
         if (m_SnowBallPrefab == null)
             return;
 
+        Debug.Log("Shot");
         ShotRPC(a_Pos, a_Rot);
         pv.RPC("ShotRPC", RpcTarget.Others, a_Pos, a_Rot);
     }
@@ -49,8 +50,29 @@ public class PlayerSkillCtrl : MonoBehaviour
     void CreateSnowWallRPC(Vector3 a_Pos, Quaternion a_Rot)
     {
         GameObject a_SnowWall = GameObject.Instantiate(m_SnowWallPrefab, a_Pos, a_Rot);
-        a_SnowWall.GetComponent<SnowBallCtrl>().SnowData.AttackerId = pv.Owner.ActorNumber;
+        a_SnowWall.GetComponent<SnowWallCtrl>().SnowData.AttackerId = pv.Owner.ActorNumber;
         if (pv.Owner.CustomProperties.ContainsKey("MyTeam") == true)
-            a_SnowWall.GetComponent<SnowBallCtrl>().SnowData.AttackerTeam = (int)pv.Owner.CustomProperties["MyTeam"];
+            a_SnowWall.GetComponent<SnowWallCtrl>().SnowData.AttackerTeam = (int)pv.Owner.CustomProperties["MyTeam"];
+    }
+
+    public void CreateSnowBowling(Vector3 a_Pos, Quaternion a_Rot)
+    {
+        if (m_SnowBowlingPrefab == null)
+            return;
+
+        CreateSnowBowlingRPC(a_Pos, a_Rot);
+        pv.RPC("CreateSnowBowlingRPC", RpcTarget.Others, a_Pos, a_Rot);
+    }
+
+    [PunRPC]
+    void CreateSnowBowlingRPC(Vector3 a_Pos, Quaternion a_Rot)
+    {
+        GameObject a_SnowBall = GameObject.Instantiate(m_SnowBowlingPrefab, a_Pos, a_Rot);
+        a_SnowBall.name = "SnowBowling";
+        float a_Radius = a_SnowBall.transform.localScale.x / 2.0f;
+        a_SnowBall.transform.SetParent(this.gameObject.transform);
+        a_SnowBall.GetComponent<SnowBowlingCtrl>().SnowData.AttackerId = pv.Owner.ActorNumber;
+        if (pv.Owner.CustomProperties.ContainsKey("MyTeam") == true)
+            a_SnowBall.GetComponent<SnowBowlingCtrl>().SnowData.AttackerTeam = (int)pv.Owner.CustomProperties["MyTeam"];
     }
 }

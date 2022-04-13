@@ -18,17 +18,12 @@ public class RoomMgr : MonoBehaviourPunCallbacks
     public Button ChatEnterBtn;
 
     // 팀 관련 변수
+    private bool[] InPlayer = new bool[8]; // 0 ~ 3 : Red팀, 4 ~ 7 : Blue팀
     ExitGames.Client.Photon.Hashtable m_TeamInfoProps = new ExitGames.Client.Photon.Hashtable();
     [Header("Red Team Select UI")]
-    public Button RedTeam1Btn;
-    public Button RedTeam2Btn;
-    public Button RedTeam3Btn;
-    public Button RedTeam4Btn;
+    public Button[] RedTeamBtn = new Button[4];
     [Header("Blue Team Select UI")]
-    public Button BlueTeam1Btn;
-    public Button BlueTeam2Btn;
-    public Button BlueTeam3Btn;
-    public Button BlueTeam4Btn;
+    public Button[] BlueTeamBtn = new Button[4];
 
     // 버튼 관련
     [HideInInspector] bool IsReady = false;
@@ -36,6 +31,8 @@ public class RoomMgr : MonoBehaviourPunCallbacks
     [Header("Button UI")]
     public Button SelectSkillBtn;
     public Button ReadyBtn;
+    public Button StartBtn;
+    public bool IsExit = false;
     public Button ExitBtn;
 
     void Awake()
@@ -49,23 +46,23 @@ public class RoomMgr : MonoBehaviourPunCallbacks
     // Start is called before the first frame update
     void Start()
     {
-        if (RedTeam1Btn != null)
-            RedTeam1Btn.onClick.AddListener(() => { SendSelectTeam(0, 0); });
-        if (RedTeam2Btn != null)
-            RedTeam2Btn.onClick.AddListener(() => { SendSelectTeam(0, 1); });
-        if (RedTeam3Btn != null)
-            RedTeam3Btn.onClick.AddListener(() => { SendSelectTeam(0, 2); });
-        if (RedTeam4Btn != null)
-            RedTeam4Btn.onClick.AddListener(() => { SendSelectTeam(0, 3); });
+        if (!ReferenceEquals(RedTeamBtn[0], null))
+            RedTeamBtn[0].onClick.AddListener(() => { SendSelectTeam(0, 0); });
+        if (!ReferenceEquals(RedTeamBtn[1], null))
+            RedTeamBtn[1].onClick.AddListener(() => { SendSelectTeam(0, 1); });
+        if (!ReferenceEquals(RedTeamBtn[2], null))
+            RedTeamBtn[2].onClick.AddListener(() => { SendSelectTeam(0, 2); });
+        if (!ReferenceEquals(RedTeamBtn[3], null))
+            RedTeamBtn[3].onClick.AddListener(() => { SendSelectTeam(0, 3); });
 
-        if (BlueTeam1Btn != null)
-            BlueTeam1Btn.onClick.AddListener(() => { SendSelectTeam(1, 0); });
-        if (BlueTeam2Btn != null)
-            BlueTeam2Btn.onClick.AddListener(() => { SendSelectTeam(1, 1); });
-        if (BlueTeam3Btn != null)
-            BlueTeam3Btn.onClick.AddListener(() => { SendSelectTeam(1, 2); });
-        if (BlueTeam4Btn != null)
-            BlueTeam4Btn.onClick.AddListener(() => { SendSelectTeam(1, 3); });
+        if (!ReferenceEquals(BlueTeamBtn[0], null))
+            BlueTeamBtn[0].onClick.AddListener(() => { SendSelectTeam(1, 0); });
+        if (!ReferenceEquals(BlueTeamBtn[1], null))
+            BlueTeamBtn[1].onClick.AddListener(() => { SendSelectTeam(1, 1); });
+        if (!ReferenceEquals(BlueTeamBtn[2], null))
+            BlueTeamBtn[2].onClick.AddListener(() => { SendSelectTeam(1, 2); });
+        if (!ReferenceEquals(BlueTeamBtn[3], null))
+            BlueTeamBtn[3].onClick.AddListener(() => { SendSelectTeam(1, 3); });
 
         if (ExitBtn != null)
             ExitBtn.onClick.AddListener(OnClickExitRoom);
@@ -75,8 +72,36 @@ public class RoomMgr : MonoBehaviourPunCallbacks
             {
                 IsReady = !IsReady;
                 SendReady();
-                //StartCoroutine(this.LoadInGameScene());
             });
+
+        if (StartBtn != null)
+            StartBtn.onClick.AddListener(() =>
+            {
+                StartCoroutine(LoadInGameScene());    
+            });
+
+        // 처음 들어왔을때 첫 자리 잡기 위해 확인
+        foreach (Player a_RefPlayer in PhotonNetwork.PlayerList)
+        {
+            if (a_RefPlayer.ActorNumber == PhotonNetwork.LocalPlayer.ActorNumber)
+                continue;
+
+            int a_Team = -1;
+            int a_PosIdx = -1;
+            ReceiveSelectTeam(a_RefPlayer, ref a_Team, ref a_PosIdx);
+            if (a_Team == -1 || a_PosIdx == -1)
+                continue;
+
+            InPlayer[(a_Team + 1) * (a_PosIdx + 1) - 1] = true;
+        }
+        for (int i = 0; i < InPlayer.Length; i++)
+        {
+            if (InPlayer[i] == false)
+            {
+                SendSelectTeam((int)(i / 4), i % 4, true);
+                break;
+            }
+        }
 
         //모든 클라우드의 네트워크 메시지 수신을 다시 연결
         PhotonNetwork.IsMessageQueueRunning = true;
@@ -88,18 +113,27 @@ public class RoomMgr : MonoBehaviourPunCallbacks
         RefreshPhotonTeam(); // 리스트 UI 갱신
     }
 
+    bool IsFirstTime = true; // 유저가 처음 들어왔을때
     void RefreshPhotonTeam()
     {
+        if (IsExit)
+            return;
+
+        for (int team = 0; team < 2; team++)
+            for (int pos = 0; pos < 4; pos++)
+                RefreshUI(null, team, pos, false);
+
+        bool AllReady = true; // 전부 준비가 되었는지 확인 변수
+
         int Team1Cnt = 0;
         int Team2Cnt = 0;
-
-        bool AllReady = true;
-
-        int a_Team = 0;
-        int a_PosIdx = 0;
         foreach (Player a_RefPlayer in PhotonNetwork.PlayerList)
         {
+            int a_Team = -1;
+            int a_PosIdx = -1;
             ReceiveSelectTeam(a_RefPlayer, ref a_Team, ref a_PosIdx);
+            if (a_Team == -1 || a_PosIdx == -1)
+                continue;
 
             if (a_Team == 0)
                 Team1Cnt++;
@@ -108,36 +142,73 @@ public class RoomMgr : MonoBehaviourPunCallbacks
 
             if (ReceiveReady(a_RefPlayer))
             {
-
+                RefreshUI(a_RefPlayer, a_Team, a_PosIdx, true);
             }
             else
             {
+                RefreshUI(a_RefPlayer, a_Team, a_PosIdx, false);
                 AllReady = false;
             }
         }
 
+        bool PossibleStart = false;
         if (AllReady && Team1Cnt > 0 && Team2Cnt > 0)
         {
             if (Team1Cnt == Team2Cnt)
             {
-                if (bTest == false)
-                    return;
-
                 if (PhotonNetwork.IsMasterClient)
-                {
-                    StartCoroutine(LoadInGameScene());
-                }
+                    PossibleStart = true;
             }
+        }
+
+        if (PossibleStart)
+        {
+            ReadyBtn.gameObject.SetActive(false);
+            StartBtn.gameObject.SetActive(true);
+        }
+        else
+        {
+            ReadyBtn.gameObject.SetActive(true);
+            StartBtn.gameObject.SetActive(false);
         }
     }
 
-    bool bTest = true;
-    IEnumerator LoadInGameScene() //최종 InGame 씬 로딩 --> 6번 or 5번
+    IEnumerator LoadInGameScene() //최종 InGame 씬 로딩
     {
-        bTest = false;
         PhotonNetwork.LoadLevel("InGameScene");
         PhotonNetwork.AutomaticallySyncScene = false;
         yield return null;
+    }
+
+    void RefreshUI(Player a_Player, int a_Team, int a_Pos, bool a_IsReady)
+    {
+        Button a_Btn;
+        if (a_Team == 0)
+            a_Btn = RedTeamBtn[a_Pos];
+        else
+            a_Btn = BlueTeamBtn[a_Pos];
+
+        if (a_Player != null)
+        {
+            a_Btn.GetComponent<Image>().color = Color.green;
+            string a_PlayerNickName = string.Format("\n{0}", a_Player.NickName);
+            if (a_Player.IsMasterClient)
+                a_PlayerNickName = string.Format("[방장]\r\n{0}", a_Player.NickName);
+
+            a_Btn.transform.GetComponentInChildren<Text>().text = a_PlayerNickName;
+            a_Btn.transform.Find("ReadyBar").gameObject.SetActive(a_IsReady);
+            a_Btn.enabled = false;
+            InPlayer[(a_Team + 1) * (a_Pos + 1) - 1] = true;
+        }
+        else
+        {
+            a_Btn.GetComponent<Image>().color = Color.white;
+
+            a_Btn.transform.GetComponentInChildren<Text>().text = string.Empty;
+            a_Btn.transform.Find("ReadyBar").gameObject.SetActive(false);
+            a_Btn.enabled = true;
+            InPlayer[(a_Team + 1) * (a_Pos + 1) - 1] = false;
+        }
     }
 
     void SendReady()
@@ -167,41 +238,12 @@ public class RoomMgr : MonoBehaviourPunCallbacks
         return (bool)a_Player.CustomProperties["IsReady"];
     }
 
-    void SendSelectTeam(int a_Team, int a_Pos)
+    void SendSelectTeam(int a_Team, int a_Pos, bool IsEnterRoom = false)
     {
         if (m_TeamInfoProps == null)
         {
             m_TeamInfoProps = new ExitGames.Client.Photon.Hashtable();
             m_TeamInfoProps.Clear();
-        }
-
-        if (m_TeamInfoProps.ContainsKey("MyTeam") == true && m_TeamInfoProps.ContainsKey("TeamIdx") == true)
-        {
-            // 이전 정보가 남은 UI 제거
-            int a_BeforeTeam = (int)m_TeamInfoProps["MyTeam"];
-            int a_BeforePosIdx = (int)m_TeamInfoProps["TeamIdx"];
-            if (a_BeforeTeam == 0)
-            {
-                if (a_BeforePosIdx == 0)
-                    RedTeam1Btn.GetComponentInChildren<Text>().text = "";
-                else if (a_BeforePosIdx == 1)
-                    RedTeam2Btn.GetComponentInChildren<Text>().text = "";
-                else if (a_BeforePosIdx == 2)
-                    RedTeam3Btn.GetComponentInChildren<Text>().text = "";
-                else if (a_BeforePosIdx == 3)
-                    RedTeam4Btn.GetComponentInChildren<Text>().text = "";
-            }
-            else
-            {
-                if (a_BeforePosIdx == 0)
-                    BlueTeam1Btn.GetComponentInChildren<Text>().text = "";
-                else if (a_BeforePosIdx == 1)
-                    BlueTeam2Btn.GetComponentInChildren<Text>().text = "";
-                else if (a_BeforePosIdx == 2)
-                    BlueTeam3Btn.GetComponentInChildren<Text>().text = "";
-                else if (a_BeforePosIdx == 3)
-                    BlueTeam4Btn.GetComponentInChildren<Text>().text = "";
-            }
         }
 
         if (m_TeamInfoProps.ContainsKey("MyTeam") == true)
@@ -215,12 +257,11 @@ public class RoomMgr : MonoBehaviourPunCallbacks
             m_TeamInfoProps.Add("TeamIdx", a_Pos);
 
         PhotonNetwork.LocalPlayer.SetCustomProperties(m_TeamInfoProps);
+       
     }
 
     public void ReceiveSelectTeam(Player a_Player, ref int a_Team, ref int a_Pos)
     {
-        a_Team = 0;
-        a_Pos = 0;
         if (a_Player == null)
             return;
 
@@ -241,6 +282,7 @@ public class RoomMgr : MonoBehaviourPunCallbacks
 
     public void OnClickExitRoom()
     {
+        IsExit = true;
         //로그 메시지에 출력할 문자열 생성
         string msg = "\n<color=#ff0000>[" + PhotonNetwork.LocalPlayer.NickName + "] Disconnected</color>";
         //RPC 함수 호출
@@ -250,28 +292,28 @@ public class RoomMgr : MonoBehaviourPunCallbacks
         //또한 PhotonTarget.AllBuffered 옵션으로
         //RPC를 호출했기 때문에 나중에 입장해도 기존의 접속 로그 메시지가 표시된다.
 
-        // 마지막 사람이 방을 떠날 때 룸의 CustomProperties를 초기화 해야한다.
+        // 마지막 사람이 방을 떠날 때 룸의 CustomProperties를 초기화
         if (PhotonNetwork.PlayerList != null && PhotonNetwork.PlayerList.Length <= 1)
         {
             if (PhotonNetwork.CurrentRoom != null)
                 PhotonNetwork.CurrentRoom.CustomProperties.Clear();
         }
 
-        // 지금 나가려는 탱크를 찾아서 그 탱크의 모든 CustomProperties를 초기화 해주고 나가는 것이 좋다.
+        // 지금 나가려는 Player의 모든 CustomProperties를 초기화
         if (PhotonNetwork.LocalPlayer != null)
             PhotonNetwork.LocalPlayer.CustomProperties.Clear();
 
-        //현재 룸을 빠져나가며 생성한 모든 네트워크 객체를 삭제
+        // 현재 룸을 빠져나가며 생성한 모든 네트워크 객체를 삭제
         PhotonNetwork.LeaveRoom();
     }
 
-    //룸에서 접속 종료됐을 때 호출되는 콜백 함수
+    // 룸에서 접속 종료됐을 때 호출되는 콜백 함수
     public override void OnLeftRoom() 
     {
         StartCoroutine(this.LoadLobbyScene());
     }
 
-    IEnumerator LoadLobbyScene() //최종 InGame 씬 로딩 --> 6번 or 5번
+    IEnumerator LoadLobbyScene()
     {
         //씬을 이동하는 동안 포톤 클라우드 서버로부터 네트워크 메시지 수신 중단
         PhotonNetwork.IsMessageQueueRunning = false;

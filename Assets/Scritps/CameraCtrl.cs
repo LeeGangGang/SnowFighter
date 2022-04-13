@@ -13,7 +13,7 @@ public class CameraCtrl : MonoBehaviour
 
     public float m_DistViewY = 11.0f;
     public float m_DistViewZ = 7.5f;
-    public float m_Angle = 55.0f;
+    public float m_Angle = 50.0f;
 
     Vector3 CamPos;
 

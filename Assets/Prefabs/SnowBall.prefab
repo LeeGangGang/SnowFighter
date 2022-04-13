@@ -12,11 +12,11 @@ GameObject:
   - component: {fileID: 1434010745434846380}
   - component: {fileID: 1231001612166527793}
   - component: {fileID: 8585458105044507591}
-  - component: {fileID: 2731508643153669011}
   - component: {fileID: 141586587237672120}
   - component: {fileID: 4231976601013914964}
   - component: {fileID: 2454098207061638433}
   - component: {fileID: 6580618084842838720}
+  - component: {fileID: 8057346412420185484}
   m_Layer: 6
   m_Name: SnowBall
   m_TagString: SnowBall
@@ -100,22 +100,6 @@ SphereCollider:
   serializedVersion: 2
   m_Radius: 0.45
   m_Center: {x: 0, y: 0, z: 0}
---- !u!54 &2731508643153669011
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 245866406054031344}
-  serializedVersion: 2
-  m_Mass: 0.2
-  m_Drag: 0
-  m_AngularDrag: 0.05
-  m_UseGravity: 1
-  m_IsKinematic: 0
-  m_Interpolate: 0
-  m_Constraints: 0
-  m_CollisionDetection: 0
 --- !u!114 &141586587237672120
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -319,7 +303,7 @@ ParticleSystem:
     startLifetime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 1
+      scalar: 0.1
       minScalar: 5
       maxCurve:
         serializedVersion: 2
@@ -4999,3 +4983,19 @@ ParticleSystemRenderer:
   m_Mesh2: {fileID: 0}
   m_Mesh3: {fileID: 0}
   m_MaskInteraction: 0
+--- !u!54 &8057346412420185484
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 245866406054031344}
+  serializedVersion: 2
+  m_Mass: 0.2
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 3

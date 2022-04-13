@@ -84,13 +84,14 @@ public class GameMgr : MonoBehaviourPunCallbacks, IPunObservable
                         m_WaitTmText.gameObject.SetActive(false);
 
                     if (PhotonNetwork.IsMasterClient) // 마스터 클라이언트만
-                        //m_InGameTimer -= Time.deltaTime;
+                        m_InGameTimer -= Time.deltaTime;
 
                     if (m_InGameTimer <= 120.0f)
                     {
-                        float a_FrostAmt = 0.5f * (1.0f - (m_InGameTimer / 120.0f));
-                        if (a_FrostAmt >= 0.5f)
-                            a_FrostAmt = 0.5f;
+                        float a_FrostAmt = 1.0f * (1.0f - (m_InGameTimer / 120.0f));
+                        if (a_FrostAmt >= 1.0f)
+                            a_FrostAmt = 1.0f;
+
                         Camera.main.GetComponent<FrostEffect>().FrostAmount = a_FrostAmt;
 
                         if (m_InGameTimer <= 0.0f)
@@ -98,7 +99,7 @@ public class GameMgr : MonoBehaviourPunCallbacks, IPunObservable
                             //Game Over 처리
                             if (PhotonNetwork.IsMasterClient == true)
                             {
-                                SendGState(GameState.Gs_GameEnd); //<--- 여기서는 지금 룸을 의미함    
+                                SendGState(GameState.Gs_GameEnd);    
                             }
                         }
                     }
@@ -106,15 +107,26 @@ public class GameMgr : MonoBehaviourPunCallbacks, IPunObservable
                 break;
             case GameState.Gs_GameEnd:
                 {
-
+                    if (PhotonNetwork.IsMasterClient)
+                        StartCoroutine(LoadRoomScene());
                 }
                 break;
         }
         
     }
+
+    IEnumerator LoadRoomScene() //최종 InGame 씬 로딩
+    {
+        PhotonNetwork.LoadLevel("RoomScene");
+        PhotonNetwork.AutomaticallySyncScene = false;
+        yield return null;
+    }
+
     public void CreatePlayer(Vector3 pos)
     {
-        Camera.main.GetComponent<CameraCtrl>().Player = PhotonNetwork.Instantiate("Player", pos, Quaternion.identity, 0);
+        GameObject MyPlayer = PhotonNetwork.Instantiate("Player", pos, Quaternion.identity, 0);
+        MyPlayer.name = "MyPlayer";
+        Camera.main.GetComponent<CameraCtrl>().Player = MyPlayer;
     }
 
     public void CastingBar(bool IsActive, string SkillName = "", float CurTime = 0.0f, float MaxTime = 0.0f)
