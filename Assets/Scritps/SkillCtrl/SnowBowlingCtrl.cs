@@ -36,6 +36,13 @@ public class SnowBowlingCtrl : MonoBehaviour
         tr.transform.Rotate(new Vector3(Time.deltaTime * 540.0f, 0, 0));
     }
 
+    public void RollingSnow(Vector3 a_Dir, float a_Speed)
+    {
+        tr.SetParent( null );
+        _rigidbody.velocity = a_Dir * a_Speed;
+        DestroyThisObj( 2.0f );
+    }
+
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.name.Equals("MyPlayer"))
@@ -51,7 +58,7 @@ public class SnowBowlingCtrl : MonoBehaviour
         DestroyThisObj();
     }
 
-    IEnumerator DestroySnowBowling(float tm)
+    IEnumerator DestroySnowBowling(float tm = 0.0f)
     {
         yield return new WaitForSeconds(tm);
 
@@ -63,7 +70,7 @@ public class SnowBowlingCtrl : MonoBehaviour
         if (_rigidbody != null)
             _rigidbody.velocity = Vector3.zero;
 
-        Destroy(this.gameObject, 0.0f);
+        Destroy(this.gameObject);
     }
 
     public void Init()
@@ -90,13 +97,11 @@ public class SnowBowlingCtrl : MonoBehaviour
             DestroyThisObj();
     }
 
-    public void DestroyThisObj()
+    public void DestroyThisObj(float tm = 0.0f)
     {
         if (m_PlayerCtrl != null)
             m_PlayerCtrl.m_IsBowling = false;
 
-        Debug.Log(m_PlayerCtrl.m_NickName.text);
-
-        StartCoroutine(this.DestroySnowBowling(0.0f));
+        StartCoroutine(this.DestroySnowBowling( tm ) );
     }
 }

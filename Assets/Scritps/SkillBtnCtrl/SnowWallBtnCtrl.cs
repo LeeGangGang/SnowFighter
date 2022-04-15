@@ -53,12 +53,6 @@ public class SnowWallBtnCtrl : MonoBehaviour
         {
             if (m_IsCasting) // 캐스팅중이라면
             {
-                if (m_PlayerCtrl == null || m_SkillCtrl == null || m_PlayerTr == null)
-                    return;
-
-                if (m_PlayerCtrl.m_CurSnowCnt <= 0)
-                    return;
-
                 if (m_PlayerCtrl.m_CurAnimState != AnimState.Gather)
                     m_PlayerCtrl.MySetAnim(AnimState.Gather);
 
@@ -74,6 +68,7 @@ public class SnowWallBtnCtrl : MonoBehaviour
                     Quaternion WallRot = m_PlayerTr.rotation;
 
                     m_SkillCtrl.CreateSnowWall(WallPos, WallRot);
+                    m_PlayerCtrl.SendSnowCnt( m_PlayerCtrl.m_CurSnowCnt-- );
 
                     if (m_PlayerCtrl.m_CurAnimState != AnimState.Idle)
                         m_PlayerCtrl.MySetAnim(AnimState.Idle);
@@ -83,12 +78,21 @@ public class SnowWallBtnCtrl : MonoBehaviour
     }
     void OnPointerDown(PointerEventData pointerEventData)
     {
+        if(m_PlayerCtrl == null || m_SkillCtrl == null || m_PlayerTr == null)
+            return;
+
+        if(m_PlayerCtrl.m_CurSnowCnt <= 0)
+            return;
+
         m_PlayerCtrl.m_MovePossible = false;
         m_IsCasting = true;
     }
 
     void OnPointerUp(PointerEventData pointerEventData)
     {
+        if(m_PlayerCtrl == null || m_SkillCtrl == null || m_PlayerTr == null)
+            return;
+
         m_PlayerCtrl.MySetAnim(AnimState.Idle);
         m_PlayerCtrl.m_MovePossible = true;
         m_IsCasting = false;

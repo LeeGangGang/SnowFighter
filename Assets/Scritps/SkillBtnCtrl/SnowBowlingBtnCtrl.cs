@@ -56,12 +56,6 @@ public class SnowBowlingBtnCtrl : MonoBehaviour
         {
             if (m_IsCasting) // 캐스팅중이라면
             {
-                if (m_PlayerCtrl == null || m_SkillCtrl == null || m_PlayerTr == null)
-                    return;
-
-                if (m_PlayerCtrl.m_CurSnowCnt <= 0)
-                    return;
-
                 m_CurCastTime += Time.deltaTime;
                 GameMgr.Inst.CastingBar(true, "눈 굴리기", m_CurCastTime, m_CastTime);
                 if (m_CurCastTime <= m_CastTime)
@@ -76,40 +70,43 @@ public class SnowBowlingBtnCtrl : MonoBehaviour
                     m_CurCoolTime = m_CoolTime;
                     GameMgr.Inst.CastingBar(false);
                     m_PlayerCtrl.m_IsBowling = false;
-                    m_PlayerCtrl.m_BowMvSpeed = 200.0f;
+                    m_SkillCtrl.RollingSnow( m_PlayerTr.forward, m_PlayerCtrl.m_BowMvSpeed / 10.0f );
                 }
-            }
-            else
-            {
-                m_CurCastTime = 0.0f;
-                m_CurCoolTime = m_CoolTime;
-                GameMgr.Inst.CastingBar(false);
-                m_PlayerCtrl.m_IsBowling = false;
-                m_PlayerCtrl.m_BowMvSpeed = 200.0f;
             }
         }
     }
 
     void OnPointerDown(PointerEventData pointerEventData)
     {
+        if(m_PlayerCtrl == null || m_SkillCtrl == null || m_PlayerTr == null)
+            return;
+
+        if(m_PlayerCtrl.m_CurSnowCnt <= 0)
+            return;
+
         m_IsCasting = true;
         m_PlayerCtrl.m_IsBowling = true;
         if (m_PlayerCtrl.transform.Find("SnowBowling") == null)
         {
+            m_PlayerCtrl.m_BowMvSpeed = 200.0f;
             Vector3 BallPos = m_PlayerTr.position + (m_PlayerTr.forward * 2.0f);
             Quaternion BallRot = m_PlayerTr.rotation;
             m_SkillCtrl.CreateSnowBowling(BallPos, BallRot);
+            m_PlayerCtrl.SendSnowCnt( m_PlayerCtrl.m_CurSnowCnt-- );
         }
     }
 
     void OnPointerUp(PointerEventData pointerEventData)
     {
+        if(m_PlayerCtrl == null || m_SkillCtrl == null || m_PlayerTr == null)
+            return;
+
         m_PlayerCtrl.MySetAnim(AnimState.Idle);
         m_IsCasting = false;
         m_CurCastTime = 0.0f;
         GameMgr.Inst.CastingBar(false);
         m_PlayerCtrl.m_IsBowling = false;
-        m_PlayerCtrl.m_BowMvSpeed = 200.0f;
+        m_SkillCtrl.RollingSnow( m_PlayerTr.forward, m_PlayerCtrl.m_BowMvSpeed / 10.0f );
     }
 
     void CoolTime_Update()

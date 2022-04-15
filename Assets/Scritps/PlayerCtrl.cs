@@ -50,8 +50,8 @@ public class PlayerCtrl : MonoBehaviourPunCallbacks, IPunObservable
     // -----------------------------
 
     ExitGames.Client.Photon.Hashtable SnowCntProps = new ExitGames.Client.Photon.Hashtable();
-    [HideInInspector] public int m_CurSnowCnt = 100; // 현재 가지고 있는 눈덩이 갯수
-    [HideInInspector] public int m_MaxSnowCnt = 100; // 최대 가질수 있는 눈덩이 갯수
+    [HideInInspector] public int m_CurSnowCnt = 10; // 현재 가지고 있는 눈덩이 갯수
+    [HideInInspector] public int m_MaxSnowCnt = 10; // 최대 가질수 있는 눈덩이 갯수
 
     //위치 정보를 송수신할 때 사용할 변수 선언 및 초깃값 설정
     private Vector3 m_CurPos = Vector3.zero;
@@ -64,8 +64,8 @@ public class PlayerCtrl : MonoBehaviourPunCallbacks, IPunObservable
 
     void Awake()
     {
-        m_MaxSnowCnt = 100;
-        m_CurSnowCnt = 100;
+        m_MaxSnowCnt = 10;
+        m_CurSnowCnt = 10;
 
         //컴포넌트 할당
         tr = GetComponent<Transform>();
@@ -308,8 +308,6 @@ public class PlayerCtrl : MonoBehaviourPunCallbacks, IPunObservable
                     controller.SimpleMove(tr.rotation * Vector3.forward * m_BowMvSpeed * 3.0f * Time.deltaTime);
 
                 MySetAnim(AnimState.Run);
-                //Quaternion targetRot = new Quaternion(tr.rotation.x, tr.rotation.y + (a_MoveAngle * 5.0f * Time.deltaTime), tr.rotation.z, tr.rotation.w);
-                //tr.rotation = Quaternion.RotateTowards(tr.rotation, targetRot, 360 * rotSpeed * Time.deltaTime);
             }
             else
             {

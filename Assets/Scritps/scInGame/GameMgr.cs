@@ -60,7 +60,7 @@ public class GameMgr : MonoBehaviourPunCallbacks, IPunObservable
     // Update is called once per frame
     void Update()
     {
-        m_SnowCntText.text = Camera.main.GetComponent<CameraCtrl>().Player.GetComponent<PlayerCtrl>().m_CurSnowCnt.ToString();
+        m_SnowCntText.text = "x " + Camera.main.GetComponent<CameraCtrl>().Player.GetComponent<PlayerCtrl>().m_CurSnowCnt.ToString();
         m_InGameTmText.text = m_InGameTimer.ToString("0.0");
 
         if (IsGamePossible() == false)

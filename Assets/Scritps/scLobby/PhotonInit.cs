@@ -28,14 +28,11 @@ public class PhotonInit : MonoBehaviourPunCallbacks  //MonoBehaviour
         //PhotonNetwork.SendRate = 40;            
         //PhotonNetwork.SerializationRate = 20;
 
-        //포톤 클라우드 서버 접속 여부 확인
-        //(인게임에서 빠져나 온 경우가 있기 때문에...)
         if (!PhotonNetwork.IsConnected)
         {
             //1번, 포톤 클라우드에 접속
             PhotonNetwork.ConnectUsingSettings();
             //포톤 서버에 접속시도(지역 서버 접속) -> AppID 사용자 인증 
-            //-> 로비 입장 진행
         }
 
         //사용자 이름 설정
@@ -52,12 +49,6 @@ public class PhotonInit : MonoBehaviourPunCallbacks  //MonoBehaviour
 
         if (m_CreateRoom_Btn != null)
             m_CreateRoom_Btn.onClick.AddListener(CreateRoomPop_Click);
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
     }
 
     //2번, ConnectUsingSettings() 함수 호출에 대한 서버 접속이 성공하면 호출되는 콜백 함수
@@ -77,7 +68,6 @@ public class PhotonInit : MonoBehaviourPunCallbacks  //MonoBehaviour
     {
         Debug.Log("로비접속완료");
         m_PlayerName_Txt.text = GetUserId();
-        //방에서 로비로 나올 때도 유저 ID를 하나 셋팅해 주어야 한다.
     }
 
     //PhotonNetwork.JoinRandomRoom() 이 함수 실패한 경우 호출되는 콜백 함수
@@ -92,8 +82,6 @@ public class PhotonInit : MonoBehaviourPunCallbacks  //MonoBehaviour
 
         //지정한 조건에 맞는 룸 생성 함수
         PhotonNetwork.CreateRoom("MyRoom", roomOptions, TypedLobby.Default);
-        // 방이 없을 때는 내가 방을 만들고 입장해 버린다.
-        //(서버 역할의 Client는 이쪽으로 접속하게 될 것이다.)
     }
 
     //PhotonNetwork.CreateRoom() 이 함수가 성공하면 2번째로 자동으로 호출되는 함수
@@ -105,13 +93,6 @@ public class PhotonInit : MonoBehaviourPunCallbacks  //MonoBehaviour
 
         //룸 씬으로 이동하는 코루틴 실행
         StartCoroutine(this.LoadRoomScene());
-    }
-
-    void OnGUI()
-    {
-        string a_str = PhotonNetwork.NetworkClientState.ToString();
-        //현재 포톤의 상태를 string으로 리턴해 주는 함수
-        GUI.Label(new Rect(10, 1, 1500, 60), "<color=#00ff00><size=35>" + a_str + "</size></color>");
     }
 
     private void OnApplicationFocus(bool focus)

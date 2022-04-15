@@ -18,6 +18,7 @@ public class PlayerSkillCtrl : MonoBehaviour
         pv = GetComponent<PhotonView>();
     }
 
+    #region --- ´«µ¢ÀÌ ´øÁö±â
     public void Shot(Vector3 a_Pos, Quaternion a_Rot)
     {
         if (m_SnowBallPrefab == null)
@@ -36,7 +37,9 @@ public class PlayerSkillCtrl : MonoBehaviour
         if (pv.Owner.CustomProperties.ContainsKey("MyTeam") == true)
             a_SnowBall.GetComponent<SnowBallCtrl>().SnowData.AttackerTeam = (int)pv.Owner.CustomProperties["MyTeam"];
     }
+    #endregion
 
+    #region --- ´«º® ¼³Ä¡
     public void CreateSnowWall(Vector3 a_Pos, Quaternion a_Rot)
     {
         if (m_SnowWallPrefab == null)
@@ -54,7 +57,10 @@ public class PlayerSkillCtrl : MonoBehaviour
         if (pv.Owner.CustomProperties.ContainsKey("MyTeam") == true)
             a_SnowWall.GetComponent<SnowWallCtrl>().SnowData.AttackerTeam = (int)pv.Owner.CustomProperties["MyTeam"];
     }
+    #endregion
 
+    #region --- ´«µ¢ÀÌ ±¼¸®±â
+    private GameObject m_CurSnowBowling = null;
     public void CreateSnowBowling(Vector3 a_Pos, Quaternion a_Rot)
     {
         if (m_SnowBowlingPrefab == null)
@@ -67,12 +73,33 @@ public class PlayerSkillCtrl : MonoBehaviour
     [PunRPC]
     void CreateSnowBowlingRPC(Vector3 a_Pos, Quaternion a_Rot)
     {
-        GameObject a_SnowBall = GameObject.Instantiate(m_SnowBowlingPrefab, a_Pos, a_Rot);
-        a_SnowBall.name = "SnowBowling";
-        float a_Radius = a_SnowBall.transform.localScale.x / 2.0f;
-        a_SnowBall.transform.SetParent(this.gameObject.transform);
-        a_SnowBall.GetComponent<SnowBowlingCtrl>().SnowData.AttackerId = pv.Owner.ActorNumber;
+        m_CurSnowBowling = GameObject.Instantiate(m_SnowBowlingPrefab, a_Pos, a_Rot);
+        m_CurSnowBowling.name = "SnowBowling";
+        float a_Radius = m_CurSnowBowling.transform.localScale.x / 2.0f;
+        m_CurSnowBowling.transform.SetParent(this.gameObject.transform);
+        m_CurSnowBowling.GetComponent<SnowBowlingCtrl>().SnowData.AttackerId = pv.Owner.ActorNumber;
         if (pv.Owner.CustomProperties.ContainsKey("MyTeam") == true)
-            a_SnowBall.GetComponent<SnowBowlingCtrl>().SnowData.AttackerTeam = (int)pv.Owner.CustomProperties["MyTeam"];
+            m_CurSnowBowling.GetComponent<SnowBowlingCtrl>().SnowData.AttackerTeam = (int)pv.Owner.CustomProperties["MyTeam"];
     }
+
+    public void RollingSnow( Vector3 a_Dir, float a_Speed )
+    {
+        if(m_SnowBowlingPrefab == null)
+            return;
+
+        RollingSnowRPC( a_Dir, a_Speed );
+        pv.RPC( "RollingSnowRPC", RpcTarget.Others, a_Dir, a_Speed );
+    }
+
+    [PunRPC]
+    public void RollingSnowRPC( Vector3 a_Dir, float a_Speed)
+    {
+        Debug.Log( "RollingSnow1" );
+        if(m_CurSnowBowling != null)
+        {
+            Debug.Log( "RollingSnow2" );
+            m_CurSnowBowling.GetComponent<SnowBowlingCtrl>().RollingSnow( a_Dir, a_Speed );
+        }
+    }
+    #endregion
 }

@@ -23,8 +23,7 @@ public class SnowBallCtrl : MonoBehaviour
 
         _collider = GetComponent<SphereCollider>();
         _rigidbody = GetComponent<Rigidbody>();
-
-        GetComponent<Rigidbody>().AddForce(transform.forward * Speed);
+        _rigidbody.AddForce(transform.forward * Speed);
     }
 
     IEnumerator DestroySnowBall(float tm)
