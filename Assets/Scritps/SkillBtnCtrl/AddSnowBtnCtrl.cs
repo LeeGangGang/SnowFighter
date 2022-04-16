@@ -15,7 +15,7 @@ public class AddSnowBtnCtrl : MonoBehaviour
     [HideInInspector] float m_CastTime = 1.0f; // 캐스트 필요시간
     [HideInInspector] float m_CurCastTime = 0.0f; // 현재 캐스트 시간
 
-    [HideInInspector] float m_CoolTime = 1.0f; // 쿨타임
+    [HideInInspector] float m_CoolTime = 0.5f; // 쿨타임
     [HideInInspector] float m_CurCoolTime = 0.0f; // 현재 쿨타임
 
     // Start is called before the first frame update
@@ -58,7 +58,10 @@ public class AddSnowBtnCtrl : MonoBehaviour
                     return;
 
                 if (m_PlayerCtrl.m_CurAnimState != AnimState.Gather)
+                {
                     m_PlayerCtrl.MySetAnim(AnimState.Gather);
+                    m_PlayerCtrl.m_CurStatus = PlayerState.HoldAction;
+                }
 
                 m_CurCastTime += Time.deltaTime;
                 GameMgr.Inst.CastingBar(true, "눈 뭉치기", m_CurCastTime, m_CastTime);
@@ -67,6 +70,9 @@ public class AddSnowBtnCtrl : MonoBehaviour
                     m_CurCastTime = 0.0f;
                     m_CurCoolTime = m_CoolTime;
                     GameMgr.Inst.CastingBar(false);
+
+                    int a_SnowCnt = m_PlayerCtrl.m_CurSnowCnt++;
+                    m_PlayerCtrl.SendSnowCnt(a_SnowCnt);
                 }
             }
         }
@@ -74,16 +80,33 @@ public class AddSnowBtnCtrl : MonoBehaviour
 
     void OnPointerDown(PointerEventData pointerEventData)
     {
+        if (m_PlayerCtrl == null)
+            return;
+
+        int a_MaxSnowCnt = m_PlayerCtrl.m_MaxSnowCnt;
+        int a_CurSnowCnt = m_PlayerCtrl.m_CurSnowCnt;
+        if (a_MaxSnowCnt <= a_CurSnowCnt)
+            return;
+
         m_IsCasting = true;
+        m_PlayerCtrl.m_CurStatus = PlayerState.HoldAction;
     }
 
     void OnPointerUp(PointerEventData pointerEventData)
     {
+        if (m_PlayerCtrl == null)
+            return;
+
+        EndAddSnow();
         m_PlayerCtrl.MySetAnim(AnimState.Idle);
-        m_PlayerCtrl.m_MovePossible = true;
+    }
+
+    public void EndAddSnow()
+    {
         m_IsCasting = false;
         m_CurCastTime = 0.0f;
         GameMgr.Inst.CastingBar(false);
+        m_PlayerCtrl.m_CurStatus = PlayerState.Idle;
     }
 
     void CoolTime_Update()

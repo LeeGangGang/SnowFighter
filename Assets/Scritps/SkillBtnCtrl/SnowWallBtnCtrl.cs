@@ -17,7 +17,7 @@ public class SnowWallBtnCtrl : MonoBehaviour
     [HideInInspector] float m_CastTime = 1.0f; // 캐스트 필요시간
     [HideInInspector] float m_CurCastTime = 0.0f; // 현재 캐스트 시간
 
-    [HideInInspector] float m_CoolTime = 0.5f; // 쿨타임
+    [HideInInspector] float m_CoolTime = 1.0f; // 쿨타임
     [HideInInspector] float m_CurCoolTime = 0.0f; // 현재 쿨타임
 
     // Start is called before the first frame update
@@ -53,8 +53,17 @@ public class SnowWallBtnCtrl : MonoBehaviour
         {
             if (m_IsCasting) // 캐스팅중이라면
             {
+                if (m_PlayerCtrl == null || m_SkillCtrl == null || m_PlayerTr == null)
+                    return;
+
+                if (m_PlayerCtrl.m_CurSnowCnt <= 0)
+                    return;
+
                 if (m_PlayerCtrl.m_CurAnimState != AnimState.Gather)
+                {
                     m_PlayerCtrl.MySetAnim(AnimState.Gather);
+                    m_PlayerCtrl.m_CurStatus = PlayerState.HoldAction;
+                }
 
                 m_CurCastTime += Time.deltaTime;
                 GameMgr.Inst.CastingBar(true, "눈벽 설치", m_CurCastTime, m_CastTime);
@@ -69,35 +78,37 @@ public class SnowWallBtnCtrl : MonoBehaviour
 
                     m_SkillCtrl.CreateSnowWall(WallPos, WallRot);
                     m_PlayerCtrl.SendSnowCnt( m_PlayerCtrl.m_CurSnowCnt-- );
-
-                    if (m_PlayerCtrl.m_CurAnimState != AnimState.Idle)
-                        m_PlayerCtrl.MySetAnim(AnimState.Idle);
                 }
             }
         }
     }
     void OnPointerDown(PointerEventData pointerEventData)
     {
-        if(m_PlayerCtrl == null || m_SkillCtrl == null || m_PlayerTr == null)
+        if(m_PlayerCtrl == null)
             return;
 
         if(m_PlayerCtrl.m_CurSnowCnt <= 0)
             return;
 
-        m_PlayerCtrl.m_MovePossible = false;
         m_IsCasting = true;
+        m_PlayerCtrl.m_CurStatus = PlayerState.HoldAction;
     }
 
     void OnPointerUp(PointerEventData pointerEventData)
     {
-        if(m_PlayerCtrl == null || m_SkillCtrl == null || m_PlayerTr == null)
+        if(m_PlayerCtrl == null)
             return;
 
+        EndSnowWall();
         m_PlayerCtrl.MySetAnim(AnimState.Idle);
-        m_PlayerCtrl.m_MovePossible = true;
+    }
+
+    public void EndSnowWall()
+    {
         m_IsCasting = false;
         m_CurCastTime = 0.0f;
         GameMgr.Inst.CastingBar(false);
+        m_PlayerCtrl.m_CurStatus = PlayerState.Idle;
     }
 
     void CoolTime_Update()

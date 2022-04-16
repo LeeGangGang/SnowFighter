@@ -11,6 +11,8 @@ public class SnowBowlingCtrl : MonoBehaviour
         set { m_SnowData = value; }
     }
 
+    bool m_IsRolling = false; // Player에게서 벗어나 굴러가는 중인지
+
     private PlayerCtrl m_PlayerCtrl;
 
     private Transform tr;
@@ -21,6 +23,8 @@ public class SnowBowlingCtrl : MonoBehaviour
     void Start()
     {
         Init();
+
+        m_IsRolling = false;
 
         m_PlayerCtrl = Camera.main.GetComponent<CameraCtrl>().Player.GetComponent<PlayerCtrl>();
 
@@ -38,6 +42,7 @@ public class SnowBowlingCtrl : MonoBehaviour
 
     public void RollingSnow(Vector3 a_Dir, float a_Speed)
     {
+        m_IsRolling = true;
         tr.SetParent( null );
         _rigidbody.velocity = a_Dir * a_Speed;
         DestroyThisObj( 2.0f );
@@ -100,7 +105,14 @@ public class SnowBowlingCtrl : MonoBehaviour
     public void DestroyThisObj(float tm = 0.0f)
     {
         if (m_PlayerCtrl != null)
-            m_PlayerCtrl.m_IsBowling = false;
+            m_PlayerCtrl.m_CurStatus = PlayerState.Idle;
+
+        if (m_PlayerCtrl.pv.Owner.ActorNumber == SnowData.AttackerId)
+        {
+            GameObject a_SnowBowlingBtn = GameObject.Find("SnowBowlingBtn");
+            if (a_SnowBowlingBtn != null)
+                a_SnowBowlingBtn.GetComponent<SnowBowlingBtnCtrl>().EndSnowBowling(m_IsRolling);
+        }
 
         StartCoroutine(this.DestroySnowBowling( tm ) );
     }

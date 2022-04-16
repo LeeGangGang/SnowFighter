@@ -237,8 +237,7 @@ MonoBehaviour:
   m_PlayerId: -1
   m_Anim: {fileID: 0}
   m_CurAnimState: 0
-  m_MovePossible: 1
-  m_IsBowling: 0
+  m_CurStatus: 0
   m_BowMvSpeed: 150
   moveDir: {x: 0, y: 0, z: 0}
   m_HpBarImg: {fileID: 4937841724130782873}

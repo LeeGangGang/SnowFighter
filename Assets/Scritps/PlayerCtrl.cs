@@ -6,7 +6,10 @@ using Photon.Pun;
 
 public enum PlayerState
 {
-
+    Idle,
+    HoldAction,
+    Bowling,
+    Die
 }
 
 public enum AnimState
@@ -31,8 +34,7 @@ public class PlayerCtrl : MonoBehaviourPunCallbacks, IPunObservable
     [HideInInspector] public AnimState m_CurAnimState = AnimState.Idle;
     AnimState m_NetAnimState = AnimState.Idle;
 
-    public bool m_MovePossible = true; // 이동 가능한지 여부
-    public bool m_IsBowling = false; // 눈 굴리기 사용 여부
+    public PlayerState m_CurStatus = PlayerState.Idle;
     public float m_BowMvSpeed = 200.0f; // 눈굴리기 최소 이동속도 (최대 400)
 
     private Transform tr;
@@ -263,8 +265,8 @@ public class PlayerCtrl : MonoBehaviourPunCallbacks, IPunObservable
             return;
 
         if (pv.IsMine)
-        {  //자신이 만든 네트워크 게임오브젝트인 경우에만 키보드 조작 루틴 적용
-            if (m_MovePossible == false)
+        {
+            if (m_CurStatus == PlayerState.HoldAction)
                 return;
 
             if (100.0f < tr.position.y)
@@ -274,7 +276,7 @@ public class PlayerCtrl : MonoBehaviourPunCallbacks, IPunObservable
                 return;
             }
 
-            if (m_IsBowling)
+            if (m_CurStatus == PlayerState.Bowling)
             {
                 // the vector that we want to measure an angle from
                 Vector3 referenceForward = tr.forward; /* some vector that is not Vector3.up */

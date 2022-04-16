@@ -17723,13 +17723,6 @@ AnimationClip:
     intParameter: 0
     messageOptions: 0
   - time: 1.6666666
-    functionName: Event_AddSnow
-    data: 
-    objectReferenceParameter: {fileID: 0}
-    floatParameter: 0
-    intParameter: 0
-    messageOptions: 0
-  - time: 1.6666666
     functionName: Event_EndAnim
     data: 
     objectReferenceParameter: {fileID: 0}
