@@ -9,6 +9,7 @@ TagManager:
   - ROOM_ITEM
   - SnowBowling
   - MapObj
+  - Bullet
   layers:
   - Default
   - TransparentFX
@@ -19,8 +20,8 @@ TagManager:
   - SnowBall
   - SnowWall
   - SnowBowling
+  - SnowMan
   - MapObj
-  - 
   - 
   - 
   - 

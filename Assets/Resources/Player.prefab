@@ -239,6 +239,7 @@ MonoBehaviour:
   m_CurAnimState: 0
   m_CurStatus: 0
   m_BowMvSpeed: 150
+  tr: {fileID: 0}
   moveDir: {x: 0, y: 0, z: 0}
   m_HpBarImg: {fileID: 4937841724130782873}
   m_CurHp: 200

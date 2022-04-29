@@ -5,16 +5,16 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 0
-    path: Assets/AurynSky/WinterArena/Scenes/DemoScene_Winter.unity
-    guid: a896278eab6e62e4aa8c5a0d3188d5f9
   - enabled: 1
-    path: Assets/Scenes/LobbyScene.unity
+    path: Assets/03.Scenes/TitleScene.unity
+    guid: e0e43ae6fccb76143b2653bdf461525d
+  - enabled: 1
+    path: Assets/03.Scenes/LobbyScene.unity
     guid: d7f85c944bb10784d8ad3d128757a83c
   - enabled: 1
-    path: Assets/Scenes/RoomScene.unity
+    path: Assets/03.Scenes/RoomScene.unity
     guid: ad11b98d5cf2f724e9ff133d701b3254
   - enabled: 1
-    path: Assets/Scenes/InGameScene.unity
+    path: Assets/03.Scenes/InGameScene.unity
     guid: 9fc0d4010bbf28b4594072e72b8655ab
   m_configObjects: {}
