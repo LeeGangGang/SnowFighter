@@ -60,7 +60,7 @@ public class GameMgr : MonoBehaviourPunCallbacks, IPunObservable
     {
         PhotonNetwork.IsMessageQueueRunning = true;
 
-        if (m_ConfigBtn != null)
+        if (!ReferenceEquals(m_ConfigBtn, null))
             m_ConfigBtn.onClick.AddListener(ConfigBtn_Click);
     }
 
@@ -172,7 +172,7 @@ public class GameMgr : MonoBehaviourPunCallbacks, IPunObservable
         if (0f < m_GoWaitGame)
         {
             m_GoWaitGame -= Time.deltaTime;
-            if (m_WaitTmText != null)
+            if (!ReferenceEquals(m_WaitTmText, null))
             {
                 m_WaitTmText.gameObject.SetActive(true);
                 m_WaitTmText.text = ((int)m_GoWaitGame).ToString();

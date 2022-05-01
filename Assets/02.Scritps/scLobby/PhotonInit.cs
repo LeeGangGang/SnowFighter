@@ -20,6 +20,7 @@ public class PhotonInit : MonoBehaviourPunCallbacks
     public GameObject Popup_Canvas = null;
     public Button m_CreateRoom_Btn;
     public GameObject m_CreateRoom_Pop;
+    public GameObject m_InputRoomPass_Pop;
 
     // 룸 목록 갱신을 위한 변수
     public GameObject scrollContents; // RoomItem이 차일드로 생성될 Parent객체
@@ -46,14 +47,17 @@ public class PhotonInit : MonoBehaviourPunCallbacks
     // Start is called before the first frame update
     void Start()
     {
-        if (m_QuickMatch_Btn != null)
+        if (!ReferenceEquals(m_QuickMatch_Btn, null))
             m_QuickMatch_Btn.onClick.AddListener(QuickMatch_Click);
 
-        if (m_CreateRoom_Btn != null)
+        if (!ReferenceEquals(m_CreateRoom_Btn, null))
             m_CreateRoom_Btn.onClick.AddListener(CreateRoomPop_Click);
 
-        if (m_ConfigBtn != null)
+        if (!ReferenceEquals(m_ConfigBtn, null))
             m_ConfigBtn.onClick.AddListener(ConfigBtn_Click);
+
+        if (!ReferenceEquals(m_LogoutBtn, null))
+            m_LogoutBtn.onClick.AddListener(LogoutBtn_Click);
     }
 
     //2번, ConnectUsingSettings() 함수 호출에 대한 서버 접속이 성공하면 호출되는 콜백 함수
@@ -81,7 +85,8 @@ public class PhotonInit : MonoBehaviourPunCallbacks
         roomOptions.IsVisible = true; // 로비에서 룸의 노출 여부
         roomOptions.MaxPlayers = 8; // 룸에 입장할 수 있는 최대 접속자 수
 
-        PhotonNetwork.CreateRoom("MyRoom", roomOptions, TypedLobby.Default);
+        string a_RoomName = string.Format("_{0}", GlobalValue.nickName);
+        PhotonNetwork.CreateRoom(a_RoomName, roomOptions, TypedLobby.Default);
     }
 
     //PhotonNetwork.CreateRoom() 이 함수가 성공하면 2번째로 자동으로 호출되는 함수
@@ -111,6 +116,8 @@ public class PhotonInit : MonoBehaviourPunCallbacks
     //Join Random Room 버튼 클릭 시 호출되는 함수
     public void QuickMatch_Click() //3번 방 입장 요청 버튼 누름
     {
+        SoundManager.Instance.PlayUISound("Button");
+
         //로컬 플레이어의 이름을 설정
         PhotonNetwork.LocalPlayer.NickName = m_PlayerName_Txt.text;
         //5번 무작위로 추출된 방으로 입장
@@ -128,6 +135,8 @@ public class PhotonInit : MonoBehaviourPunCallbacks
 
     public void CreateRoomPop_Click()
     {
+        SoundManager.Instance.PlayUISound("Button");
+
         if (m_CreateRoom_Pop == null)
             m_CreateRoom_Pop = Resources.Load("CreateRoom_Pop") as GameObject;
 
@@ -183,26 +192,50 @@ public class PhotonInit : MonoBehaviourPunCallbacks
 
             // 생성한 RoomItem에 표시하기 위한 텍스트 정보 전달
             RoomData roomData = room.GetComponent<RoomData>();
-            roomData.roomName = myList[i].Name;
-            roomData.connectPlayer = myList[i].PlayerCount;
-            roomData.maxPlayer = myList[i].MaxPlayers;
+            roomData.m_RoomPass = myList[i].Name.Split('_')[0];
+            roomData.m_RoomName = myList[i].Name.Split('_')[1];
+            roomData.m_ConnectPlayer = myList[i].PlayerCount;
+            roomData.m_MaxPlayer = myList[i].MaxPlayers;
 
             roomData.DispRoomData(myList[i].IsOpen);
         }
     }
 
-    public void OnClickRoomItem(string roomName)
+    public void OnClickRoomItem(string RoomName, string RoomPass)
     {
-        PhotonNetwork.LocalPlayer.NickName = m_PlayerName_Txt.text;
-        PhotonNetwork.JoinRoom(roomName);
+        if (!string.IsNullOrEmpty(RoomPass))
+        {
+            if (m_InputRoomPass_Pop == null)
+                m_InputRoomPass_Pop = Resources.Load("InputRoomPass_Pop") as GameObject;
+
+            GameObject a_InputRoomPass_Pop = (GameObject)Instantiate(m_InputRoomPass_Pop);
+            a_InputRoomPass_Pop.GetComponent<InputRoomPassCtrl>().InitData(RoomName, RoomPass);
+            a_InputRoomPass_Pop.transform.SetParent(Popup_Canvas.transform, false);
+        }
+        else
+        {
+            string a_RoomName = string.Format($"{RoomPass}_{RoomName}");
+            PhotonNetwork.LocalPlayer.NickName = GlobalValue.nickName;
+            PhotonNetwork.JoinRoom(a_RoomName);
+        }
     }
 
-    public void ConfigBtn_Click()
+    private void ConfigBtn_Click()
     {
+        SoundManager.Instance.PlayUISound("Button");
+
         if (m_Config_Pop == null)
             m_Config_Pop = Resources.Load("Prefabs/ConfigPanel") as GameObject;
 
         GameObject a_Config_Pop = (GameObject)Instantiate(m_Config_Pop);
         a_Config_Pop.transform.SetParent(Popup_Canvas.transform, false);
+    }
+
+    private void LogoutBtn_Click()
+    {
+        SoundManager.Instance.PlayUISound("Button");
+
+        GlobalValue.ClearData();
+        SceneManager.LoadScene("TitleScene");
     }
 }

@@ -111,7 +111,7 @@ public class PlayerCtrl : MonoBehaviourPunCallbacks, IPunObservable
         if (other.gameObject.name.Contains("SnowBall"))
         {
             SnowBallCtrl a_Snow = other.gameObject.GetComponent<SnowBallCtrl>();
-            if (a_Snow != null)
+            if (!ReferenceEquals(a_Snow, null))
             {
                 if (IsMyTeam(a_Snow.SnowData.AttackerTeam) == false)
                 {
@@ -123,7 +123,7 @@ public class PlayerCtrl : MonoBehaviourPunCallbacks, IPunObservable
         else if (other.gameObject.name.Contains("SnowBowling"))
         {
             SnowBowlingCtrl a_Snow = other.gameObject.GetComponent<SnowBowlingCtrl>();
-            if (a_Snow != null)
+            if (!ReferenceEquals(a_Snow, null))
             {
                 if (IsMyTeam(a_Snow.SnowData.AttackerTeam) == false)
                 {
@@ -140,7 +140,7 @@ public class PlayerCtrl : MonoBehaviourPunCallbacks, IPunObservable
         moveSpeed = 150f;
         controller = GetComponent<CharacterController>();
 
-        if (pv != null)
+        if (!ReferenceEquals(pv, null))
         {
             m_PlayerId = pv.Owner.ActorNumber;
 
@@ -193,13 +193,6 @@ public class PlayerCtrl : MonoBehaviourPunCallbacks, IPunObservable
         m_CurHp -= a_Dmg;
         m_HpBarImg.fillAmount = (float)m_CurHp / (float)m_MaxHp;
 
-        if (m_HpBarImg.fillAmount <= 0.4f)
-            m_HpBarImg.color = Color.red;
-        else if (m_HpBarImg.fillAmount <= 0.6f)
-            m_HpBarImg.color = Color.yellow;
-        else
-            m_HpBarImg.color = Color.green;
-
         if (m_CurHp <= 0)
             m_CurHp = 0;
 
@@ -225,7 +218,7 @@ public class PlayerCtrl : MonoBehaviourPunCallbacks, IPunObservable
 
     public bool IsAction()
     {
-        if (m_prevState != null && !string.IsNullOrEmpty(m_prevState))
+        if (!ReferenceEquals(m_prevState, null) && !string.IsNullOrEmpty(m_prevState))
         {
             if (m_prevState.ToString() == AnimState.Hit.ToString() ||
                 m_prevState.ToString() == AnimState.Die.ToString() ||
@@ -244,7 +237,7 @@ public class PlayerCtrl : MonoBehaviourPunCallbacks, IPunObservable
         if (m_Anim == null)
             return;
 
-        if (m_prevState != null && !string.IsNullOrEmpty(m_prevState))
+        if (!ReferenceEquals(m_prevState, null) && !string.IsNullOrEmpty(m_prevState))
         {
             if (m_prevState.ToString() == newAnim.ToString())
                 return;
@@ -307,14 +300,14 @@ public class PlayerCtrl : MonoBehaviourPunCallbacks, IPunObservable
 
             Quaternion targetRot = Quaternion.Euler(a_Rot);
             tr.rotation = Quaternion.RotateTowards(tr.rotation, targetRot, 360 * rotSpeed * Time.deltaTime);
-            if (controller != null)
+            if (!ReferenceEquals(controller, null))
                 controller.SimpleMove(tr.rotation * Vector3.forward * m_BowMvSpeed * 3f * Time.deltaTime);
 
             MySetAnim(AnimState.Run);
         }
         else
         {
-            if (controller != null && moveDir != Vector3.zero)
+            if (!ReferenceEquals(controller, null) && moveDir != Vector3.zero)
             {
                 Quaternion targetRot = Quaternion.LookRotation(moveDir);
                 tr.rotation = Quaternion.RotateTowards(tr.rotation, targetRot, 360 * rotSpeed * Time.deltaTime);

@@ -5148,12 +5148,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 31d73a8e3fc47824f82da80649ec322c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  OkBtn: {fileID: 7889641202972372859}
-  CancelBtn: {fileID: 7889641202835788163}
-  BGMOnOffToggle: {fileID: 5604027631456475284}
-  BGMVolSld: {fileID: 4077552258966696422}
-  SEOnOffToggle: {fileID: 169373290528340321}
-  SEVolSld: {fileID: 2308445774877559155}
+  m_OkBtn: {fileID: 7889641202972372859}
+  m_CancelBtn: {fileID: 7889641202835788163}
+  m_BGMOnOffToggle: {fileID: 5604027631456475284}
+  m_BGMVolSld: {fileID: 4077552258966696422}
+  m_SEOnOffToggle: {fileID: 169373290528340321}
+  m_SEVolSld: {fileID: 2308445774877559155}
 --- !u!1 &6545466656389213471
 GameObject:
   m_ObjectHideFlags: 0

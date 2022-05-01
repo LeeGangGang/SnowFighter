@@ -7,14 +7,14 @@ using Photon.Realtime;
 
 public class TeamGameMgr : MonoBehaviourPunCallbacks
 {
-    //RPC È£ÃâÀ» À§ÇÑ PhotonView
+    //RPC È£ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ PhotonView
     private PhotonView pv;
 
-    // ÆÀÀü Player SpawnÀ§Ä¡
+    // ï¿½ï¿½ï¿½ï¿½ Player Spawnï¿½ï¿½Ä¡
     [HideInInspector] public static Vector3[] m_Team1Pos = new Vector3[4];
     [HideInInspector] public static Vector3[] m_Team2Pos = new Vector3[4];
 
-    // °ÔÀÓ ¶ó¿îµå °ü·Ã
+    // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     ExitGames.Client.Photon.Hashtable m_Team1WinProps = new ExitGames.Client.Photon.Hashtable();
     ExitGames.Client.Photon.Hashtable m_Team2WinProps = new ExitGames.Client.Photon.Hashtable();
 
@@ -39,15 +39,15 @@ public class TeamGameMgr : MonoBehaviourPunCallbacks
 
     void Awake()
     {
-        //PhotonView ÄÄÆ÷³ÍÆ® ÇÒ´ç
+        //PhotonView ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® ï¿½Ò´ï¿½
         pv = GetComponent<PhotonView>();
 
-        // Player Spawn À§Ä¡
+        // Player Spawn ï¿½ï¿½Ä¡
         GameObject Team1Pos = GameObject.Find("SpawnPos_1Team");
-        if (Team1Pos != null)
+        if (!ReferenceEquals(Team1Pos, null))
         {
             int nIdx = 0;
-            for (int i = 0; i < Team1Pos.transform.GetChildCount(); i++)
+            for (int i = 0; i < Team1Pos.transform.childCount; i++)
             {
                 m_Team1Pos[nIdx] = Team1Pos.transform.GetChild(i).transform.position;
                 m_Team1Pos[nIdx].y = 1.5f;
@@ -55,10 +55,10 @@ public class TeamGameMgr : MonoBehaviourPunCallbacks
             }
         }
         GameObject Team2Pos = GameObject.Find("SpawnPos_2Team");
-        if (Team2Pos != null)
+        if (!ReferenceEquals(Team2Pos, null))
         {
             int nIdx = 0;
-            for (int i = 0; i < Team2Pos.transform.GetChildCount(); i++)
+            for (int i = 0; i < Team2Pos.transform.childCount; i++)
             {
                 m_Team2Pos[nIdx] = Team2Pos.transform.GetChild(i).transform.position;
                 m_Team2Pos[nIdx].y = 1.5f;

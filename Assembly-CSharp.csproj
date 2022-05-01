@@ -54,6 +54,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Assets\Photon\PhotonRealtime\Demos\DemoLoadBalancing\ConnectAndJoinRandomLb.cs" />
+    <Compile Include="Assets\02.Scritps\DlgBoxCtrl.cs" />
     <Compile Include="Assets\02.Scritps\SkillBtnCtrl\SnowManBtnCtrl.cs" />
     <Compile Include="Assets\02.Scritps\SkillBtnCtrl\SnowWallBtnCtrl.cs" />
     <Compile Include="Assets\Photon\PhotonLibs\WebSocket\WebSocket.cs" />
@@ -90,18 +91,19 @@
     <Compile Include="Assets\Photon\PhotonChat\Demos\DemoChat\ChatGui.cs" />
     <Compile Include="Assets\Photon\PhotonChat\Demos\Common\TextToggleIsOnTransition.cs" />
     <Compile Include="Assets\02.Scritps\SkillBtnCtrl\SnowBallBtnCtrl.cs" />
+    <Compile Include="Assets\02.Scritps\ConfigBoxCtrl.cs" />
     <Compile Include="Assets\Photon\PhotonChat\Demos\Common\OnStartDelete.cs" />
     <Compile Include="Assets\02.Scritps\CameraCtrl.cs" />
     <Compile Include="Assets\02.Scritps\scInGame\JoyStickCtrl.cs" />
     <Compile Include="Assets\02.Scritps\scLobby\CreateRoomMgr.cs" />
     <Compile Include="Assets\04.Models\AurynSky\WinterArena\Scripts\ChestDemo.cs" />
-    <Compile Include="Assets\Scripts\UITeam\DlgBoxCtrl.cs" />
-    <Compile Include="Assets\Scripts\UITeam\ConfigBoxCtrl.cs" />
+    <Compile Include="Assets\02.Scritps\InputRoomPassCtrl.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Photon\PhotonLibs\netstandard2.0\Photon3Unity3D.xml" />
     <None Include="Assets\04.Models\Frost\HowToUse.txt" />
     <None Include="Assets\Photon\PhotonUnityNetworking\changelog.txt" />
+    <None Include="Assets\Melodious orchestra music\ReadMe.txt" />
     <None Include="Assets\Photon\PhotonLibs\WebSocket\websocket-sharp.dll" />
     <None Include="Assets\Photon\PhotonLibs\changes-library.txt" />
     <None Include="Assets\Photon\PhotonUnityNetworking\readme.txt" />
@@ -112,6 +114,7 @@
     <None Include="Assets\Photon\PhotonLibs\Metro\Photon3Unity3D.dll" />
     <None Include="Assets\04.Models\Frost\ImageBlendEffect.shader" />
     <None Include="Assets\04.Models\Skybox\Stylized Sky.shader" />
+    <None Include="Assets\Casual Jingles - 022420\Notes.txt" />
     <None Include="Assets\Photon\PhotonLibs\Photon3Unity3D.xml" />
     <None Include="Assets\Photon\PhotonUnityNetworking\link.xml" />
   </ItemGroup>

@@ -95,7 +95,7 @@ public class PlayerSkillCtrl : MonoBehaviour
     public void RollingSnowRPC( Vector3 a_Dir, float a_Speed)
     {
         Debug.Log( "RollingSnow1" );
-        if(m_CurSnowBowling != null)
+        if (!ReferenceEquals(m_CurSnowBowling, null))
         {
             Debug.Log( "RollingSnow2" );
             m_CurSnowBowling.GetComponent<SnowBowlingCtrl>().RollingSnow( a_Dir, a_Speed );

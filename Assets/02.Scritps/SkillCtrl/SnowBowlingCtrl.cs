@@ -43,9 +43,9 @@ public class SnowBowlingCtrl : MonoBehaviour
     public void RollingSnow(Vector3 a_Dir, float a_Speed)
     {
         m_IsRolling = true;
-        tr.SetParent( null );
+        tr.SetParent(null);
         _rigidbody.velocity = a_Dir * a_Speed;
-        DestroyThisObj( 2.0f );
+        DestroyThisObj(2.0f);
     }
 
     private void OnTriggerEnter(Collider other)
@@ -68,11 +68,11 @@ public class SnowBowlingCtrl : MonoBehaviour
         yield return new WaitForSeconds(tm);
 
         // 충돌 콜백 함수가 발생하지 않도록 Collider를 비활성화
-        if (_collider != null)
+        if (!ReferenceEquals(_collider, null))
             _collider.enabled = false;
 
         // 물리엔진의 영향을 받을 필요 없음
-        if (_rigidbody != null)
+        if (!ReferenceEquals(_rigidbody, null))
             _rigidbody.velocity = Vector3.zero;
 
         Destroy(this.gameObject);
@@ -104,16 +104,16 @@ public class SnowBowlingCtrl : MonoBehaviour
 
     public void DestroyThisObj(float tm = 0.0f)
     {
-        if (m_PlayerCtrl != null)
+        if (!ReferenceEquals(m_PlayerCtrl, null))
             m_PlayerCtrl.m_CurStatus = PlayerState.Idle;
 
         if (m_PlayerCtrl.pv.Owner.ActorNumber == SnowData.AttackerId)
         {
             GameObject a_SnowBowlingBtn = GameObject.Find("SnowBowlingBtn");
-            if (a_SnowBowlingBtn != null)
+            if (!ReferenceEquals(a_SnowBowlingBtn, null))
                 a_SnowBowlingBtn.GetComponent<SnowBowlingBtnCtrl>().EndSnowBowling(m_IsRolling);
         }
 
-        StartCoroutine(this.DestroySnowBowling( tm ) );
+        StartCoroutine(this.DestroySnowBowling(tm));
     }
 }

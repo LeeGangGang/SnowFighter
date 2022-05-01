@@ -22,7 +22,7 @@ public class JoyStickCtrl : MonoBehaviour
     {
         m_PlayerCtrl = Camera.main.GetComponent<CameraCtrl>().Player.GetComponent<PlayerCtrl>();
 
-        if (m_JoyStickImg != null)
+        if (!ReferenceEquals(m_JoyStickImg, null))
         {
             Vector3[] v = new Vector3[4];
             this.GetComponent<RectTransform>().GetWorldCorners(v);
@@ -86,7 +86,7 @@ public class JoyStickCtrl : MonoBehaviour
             m_JsCacDist = 1.0f;
 
         // 캐릭터 이동 처리
-        if (m_PlayerCtrl != null)
+        if (!ReferenceEquals(m_PlayerCtrl, null))
             m_PlayerCtrl.SetJoyStickMv(m_JsCacDist, m_Axis);
     }
 
@@ -103,7 +103,7 @@ public class JoyStickCtrl : MonoBehaviour
         m_JsCacDist = 0.0f;
 
         // 캐릭터 정지 처리
-        if (m_PlayerCtrl != null)
+        if (!ReferenceEquals(m_PlayerCtrl, null))
             m_PlayerCtrl.SetJoyStickMv(m_JsCacDist, m_Axis);
     }
 }

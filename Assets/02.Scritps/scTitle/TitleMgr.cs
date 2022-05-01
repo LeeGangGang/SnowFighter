@@ -3,6 +3,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using System.Text.RegularExpressions;
 
 public class TitleMgr : MonoBehaviour
 {
@@ -36,20 +37,22 @@ public class TitleMgr : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        if (m_LoginBtn != null)
+        if (!ReferenceEquals(m_LoginBtn, null))
             m_LoginBtn.onClick.AddListener(LoginBtn_Click);
 
-        if (m_OpenCreateUserPanelBtn != null)
+        if (!ReferenceEquals(m_OpenCreateUserPanelBtn, null))
             m_OpenCreateUserPanelBtn.onClick.AddListener(OpenCreateUserBtn_Click);
 
-        if (m_CancelBtn != null)
+        if (!ReferenceEquals(m_CancelBtn, null))
             m_CancelBtn.onClick.AddListener(CreateCancelBtn_Click);
 
-        if (m_CreateUserBtn != null)
+        if (!ReferenceEquals(m_CreateUserBtn, null))
             m_CreateUserBtn.onClick.AddListener(CreateUserBtn_Click);
 
-        if (m_ConfigBtn != null)
+        if (!ReferenceEquals(m_ConfigBtn, null))
             m_ConfigBtn.onClick.AddListener(ConfigBtn_Click);
+
+        SoundManager.Instance.PlayBGM("MainBgm");
     }
 
     // Update is called once per frame
@@ -67,6 +70,8 @@ public class TitleMgr : MonoBehaviour
 
     public void LoginBtn_Click()
     {
+        SoundManager.Instance.PlayUISound("Button");
+
         StartCoroutine(LoginCo());
     }
 
@@ -98,16 +103,16 @@ public class TitleMgr : MonoBehaviour
         if (N == null)
             yield break;
 
-        if (N["nickname"] != null)
+        if (!ReferenceEquals(N["nickname"], null))
             GlobalValue.nickName = N["nickname"];
 
-        if (N["winCnt"] != null)
+        if (!ReferenceEquals(N["winCnt"], null))
             GlobalValue.win = N["winCnt"].AsInt;
 
-        if (N["loseCnt"] != null)
+        if (!ReferenceEquals(N["loseCnt"], null))
             GlobalValue.lose = N["loseCnt"].AsInt;
 
-        if (N["killCnt"] != null)
+        if (!ReferenceEquals(N["killCnt"], null))
             GlobalValue.lose = N["killCnt"].AsInt;
 
         SceneManager.LoadScene("LobbyScene");
@@ -143,24 +148,30 @@ public class TitleMgr : MonoBehaviour
 
     public void OpenCreateUserBtn_Click()
     {
-        if (m_LoginPanel != null)
+        SoundManager.Instance.PlayUISound("Button");
+
+        if (!ReferenceEquals(m_LoginPanel, null))
             m_LoginPanel.SetActive(false);
 
-        if (m_CreateUserPanel != null)
+        if (!ReferenceEquals(m_CreateUserPanel, null))
             m_CreateUserPanel.SetActive(true);
     }
 
     public void CreateCancelBtn_Click()
     {
-        if (m_LoginPanel != null)
+        SoundManager.Instance.PlayUISound("Button");
+
+        if (!ReferenceEquals(m_LoginPanel, null))
             m_LoginPanel.SetActive(true);
 
-        if (m_CreateUserPanel != null)
+        if (!ReferenceEquals(m_CreateUserPanel, null))
             m_CreateUserPanel.SetActive(false);
     }
 
     public void CreateUserBtn_Click()
     {
+        SoundManager.Instance.PlayUISound("Button");
+
         StartCoroutine(CreateUserCo());
     }
 
@@ -213,6 +224,8 @@ public class TitleMgr : MonoBehaviour
 
     public void ConfigBtn_Click()
     {
+        SoundManager.Instance.PlayUISound("Button");
+
         if (m_Config_Pop == null)
             m_Config_Pop = Resources.Load("Prefabs/ConfigPanel") as GameObject;
 

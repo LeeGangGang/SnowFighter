@@ -31,11 +31,11 @@ public class SnowBallCtrl : MonoBehaviour
         yield return new WaitForSeconds(tm);
 
         // 충돌 콜백 함수가 발생하지 않도록 Collider를 비활성화
-        if (_collider != null)
+        if (!ReferenceEquals(_collider, null))
             _collider.enabled = false;
 
         // 물리엔진의 영향을 받을 필요 없음
-        if (_rigidbody != null)
+        if (!ReferenceEquals(_rigidbody, null))
             _rigidbody.velocity = Vector3.zero;
 
         Destroy(this.gameObject, 0.0f);

@@ -91,16 +91,31 @@ public class SoundManager : MonoBehaviour
             return;
         
         if (!audioClipList.ContainsKey(fileName))
-            audioClipList.Add(fileName, Resources.Load("Sound/" + fileName) as AudioClip);
-        if (audioSrc == null)
+            audioClipList.Add(fileName, Resources.Load("Sounds/" + fileName) as AudioClip);
+
+        if (ReferenceEquals(audioSrc, null))
             return;
         
-        if (audioSrc.clip != null && audioSrc.clip.name == fileName)
+        if (!ReferenceEquals(audioSrc.clip, null) && audioSrc.clip.name == fileName)
             return;
 
         audioSrc.clip = audioClipList[fileName];
         audioSrc.loop = true;
         audioSrc.Play();
+    }
+
+    public void PlayUISound(string fileName, float volume = 1f)
+    {
+        if (!soundOnOff)
+            return;
+
+        if (!audioClipList.ContainsKey(fileName))
+            audioClipList.Add(fileName, Resources.Load("Sounds/" + fileName) as AudioClip);
+
+        if (audioSrc == null)
+            return;
+
+        audioSrc.PlayOneShot(audioClipList[fileName], volume * ConfigValue.BgmSdVolume);
     }
 
     public void PlayEffSound(string fileName, float volume = 1f)
@@ -111,7 +126,7 @@ public class SoundManager : MonoBehaviour
         if (!audioClipList.ContainsKey(fileName))
             audioClipList.Add(fileName, Resources.Load("Sounds/" + fileName) as AudioClip);
 
-        if (audioClipList[fileName] != null && sdSrcList[iSdCount] != null)
+        if (!ReferenceEquals(audioClipList[fileName], null) && !ReferenceEquals(sdSrcList[iSdCount], null))
         {
             sdSrcList[iSdCount].clip = audioClipList[fileName];
             sdSrcList[iSdCount].loop = false;
@@ -141,23 +156,9 @@ public class SoundManager : MonoBehaviour
         return Volume;
     }
 
-    public void PlayUISound(string fileName, float volume = 0.2f)
-    {
-        if (!soundOnOff)
-            return;
-
-        if (!audioClipList.ContainsKey(fileName))
-            audioClipList.Add(fileName, Resources.Load("Sounds/" + fileName) as AudioClip);
-
-        if (audioSrc == null)
-            return;
-
-        audioSrc.PlayOneShot(audioClipList[fileName], volume * ConfigValue.BgmSdVolume);
-    }
-
     public void SoundOnOff_Bgm(bool soundOn = true)
     {
-        if (audioSrc != null)
+        if (!ReferenceEquals(audioSrc, null))
         {
             audioSrc.mute = !soundOn;
         }
@@ -167,7 +168,7 @@ public class SoundManager : MonoBehaviour
     {
         for (int i = 0; i < sdSrcList.Count; i++)
         {
-            if (sdSrcList[i] != null)
+            if (!ReferenceEquals(sdSrcList[i], null))
             {
                 sdSrcList[i].mute = !soundOn;
             }
@@ -176,7 +177,7 @@ public class SoundManager : MonoBehaviour
 
     public void SoundVolume_Bgm(float volume)
     {
-        if (audioSrc != null)
+        if (!ReferenceEquals(audioSrc, null))
         {
             audioSrc.volume = volume;
         }

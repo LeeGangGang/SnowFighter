@@ -64,17 +64,17 @@ public class RoomMgr : MonoBehaviourPunCallbacks
         if (!ReferenceEquals(BlueTeamBtn[3], null))
             BlueTeamBtn[3].onClick.AddListener(() => { SendSelectTeam(1, 3); });
 
-        if (ExitBtn != null)
+        if (!ReferenceEquals(ExitBtn, null))
             ExitBtn.onClick.AddListener(OnClickExitRoom);
 
-        if (ReadyBtn != null)
+        if (!ReferenceEquals(ReadyBtn, null))
             ReadyBtn.onClick.AddListener(() =>
             {
                 IsReady = !IsReady;
                 SendReady();
             });
 
-        if (StartBtn != null)
+        if (!ReferenceEquals(StartBtn, null))
             StartBtn.onClick.AddListener(() =>
             {
                 StartCoroutine(LoadInGameScene());    
@@ -194,7 +194,7 @@ public class RoomMgr : MonoBehaviourPunCallbacks
         else
             a_Btn = BlueTeamBtn[a_Pos];
 
-        if (a_Player != null)
+        if (!ReferenceEquals(a_Player, null))
         {
             a_Btn.GetComponent<Image>().color = Color.green;
             string a_PlayerNickName = string.Format("\n{0}", a_Player.NickName);
@@ -298,14 +298,14 @@ public class RoomMgr : MonoBehaviourPunCallbacks
         //RPC를 호출했기 때문에 나중에 입장해도 기존의 접속 로그 메시지가 표시된다.
 
         // 마지막 사람이 방을 떠날 때 룸의 CustomProperties를 초기화
-        if (PhotonNetwork.PlayerList != null && PhotonNetwork.PlayerList.Length <= 1)
+        if (!ReferenceEquals(PhotonNetwork.PlayerList, null) && PhotonNetwork.PlayerList.Length <= 1)
         {
-            if (PhotonNetwork.CurrentRoom != null)
+            if (!ReferenceEquals(PhotonNetwork.CurrentRoom, null))
                 PhotonNetwork.CurrentRoom.CustomProperties.Clear();
         }
 
         // 지금 나가려는 Player의 모든 CustomProperties를 초기화
-        if (PhotonNetwork.LocalPlayer != null)
+        if (!ReferenceEquals(PhotonNetwork.LocalPlayer, null))
             PhotonNetwork.LocalPlayer.CustomProperties.Clear();
 
         // 현재 룸을 빠져나가며 생성한 모든 네트워크 객체를 삭제

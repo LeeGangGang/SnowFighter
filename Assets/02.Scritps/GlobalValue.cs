@@ -9,6 +9,15 @@ public class GlobalValue
     public static int win = 0;
     public static int lose = 0;
     public static int kill = 0;
+
+    public static void ClearData()
+    {
+        userID = "";
+        nickName = "";
+        win = 0;
+        lose = 0;
+        kill = 0;
+    }
 }
 
 public class ConfigValue
@@ -23,7 +32,6 @@ public class SnowData
 {
     public float m_MaxHp = 100;
     public float m_CurHp = 0;
-
     public float m_Attck = 0;
 
     // 공격한한 플레이어의 ID 저장
