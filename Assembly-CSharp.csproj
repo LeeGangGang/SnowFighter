@@ -68,6 +68,7 @@
     <Compile Include="Assets\Photon\PhotonChat\Demos\DemoChat\AppSettingsExtensions.cs" />
     <Compile Include="Assets\02.Scritps\scInGame\GameMgr.cs" />
     <Compile Include="Assets\Photon\PhotonChat\Demos\DemoChat\NamePickGui.cs" />
+    <Compile Include="Assets\02.Scritps\InputRoomPassCtrl.cs" />
     <Compile Include="Assets\02.Scritps\scTitle\TitleMgr.cs" />
     <Compile Include="Assets\02.Scritps\GlobalValue.cs" />
     <Compile Include="Assets\04.Models\AurynSky\WinterArena\Scripts\Rotator.cs" />
@@ -97,7 +98,8 @@
     <Compile Include="Assets\02.Scritps\scInGame\JoyStickCtrl.cs" />
     <Compile Include="Assets\02.Scritps\scLobby\CreateRoomMgr.cs" />
     <Compile Include="Assets\04.Models\AurynSky\WinterArena\Scripts\ChestDemo.cs" />
-    <Compile Include="Assets\02.Scritps\InputRoomPassCtrl.cs" />
+    <Compile Include="Assets\02.Scritps\PlayerSetting\SkillSlotCtrl.cs" />
+    <Compile Include="Assets\02.Scritps\PlayerSetting\SkillDragHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Photon\PhotonLibs\netstandard2.0\Photon3Unity3D.xml" />

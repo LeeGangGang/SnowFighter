@@ -6,6 +6,13 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
+public enum ChatType
+{
+    Red = 0,
+    Blue,
+    All
+}
+
 public class RoomMgr : MonoBehaviourPunCallbacks
 {
     //RPC 호출을 위한 PhotonView
@@ -16,6 +23,15 @@ public class RoomMgr : MonoBehaviourPunCallbacks
     public InputField InputChatIF;
     public Dropdown ChatTypeDrop;
     public Button ChatEnterBtn;
+
+    [Header("PlayerSetting UI")]
+    public Button PlayerSettingShowBtn;
+    public Button PlayerSettingHideBtn;
+    public GameObject PlayerSettingPanel;
+    float MvSpeed_PS = 2000f;
+    Vector3 TargetPos_PS = new Vector3(990f, 0f, 0f);
+    Vector3 ShowPos_PS = new Vector3(350f, 0f, 0f);
+    Vector3 HidePos_PS = new Vector3(990f, 0f, 0f);
 
     // 팀 관련 변수
     private bool[] InPlayer = new bool[8]; // 0 ~ 3 : Red팀, 4 ~ 7 : Blue팀
@@ -29,7 +45,6 @@ public class RoomMgr : MonoBehaviourPunCallbacks
     [HideInInspector] bool IsReady = false;
     ExitGames.Client.Photon.Hashtable m_PlayerReady = new ExitGames.Client.Photon.Hashtable();
     [Header("Button UI")]
-    public Button SelectSkillBtn;
     public Button ReadyBtn;
     public Button StartBtn;
     public bool IsExit = false;
@@ -80,6 +95,14 @@ public class RoomMgr : MonoBehaviourPunCallbacks
                 StartCoroutine(LoadInGameScene());    
             });
 
+        if (!ReferenceEquals(PlayerSettingShowBtn, null))
+            PlayerSettingShowBtn.onClick.AddListener(() => PlayerSettingBtn_Click(true));
+        if (!ReferenceEquals(PlayerSettingHideBtn, null))
+            PlayerSettingHideBtn.onClick.AddListener(() => PlayerSettingBtn_Click(false));
+
+        if (!ReferenceEquals(ChatEnterBtn, null))
+            ChatEnterBtn.onClick.AddListener(EnterChat);
+
         // 처음 들어왔을때 첫 자리 잡기 위해 확인
         foreach (Player a_RefPlayer in PhotonNetwork.PlayerList)
         {
@@ -114,9 +137,10 @@ public class RoomMgr : MonoBehaviourPunCallbacks
     void Update()
     {
         RefreshPhotonTeam(); // 리스트 UI 갱신
+
+        PlayerSettingMoveCtrl();
     }
 
-    bool IsFirstTime = true; // 유저가 처음 들어왔을때
     void RefreshPhotonTeam()
     {
         if (IsExit)
@@ -280,8 +304,17 @@ public class RoomMgr : MonoBehaviourPunCallbacks
     [PunRPC]
     void ChatLogMsg(string msg, int teamIdx)
     {
-        //if (teamIdx != )
-        //로그 메시지 Text UI에 텍스트를 누적시켜 표시
+        if (int.Parse(msg.Split('_')[0]) != (int)ChatType.All)
+        {
+            if (int.Parse(msg.Split('_')[0]) != (int)m_TeamInfoProps["MyTeam"])
+                return;
+        }
+
+        if (int.Parse(msg.Split('_')[0]) == (int)ChatType.All)
+            msg  = "<color=#FFFFFF>" + msg.Substring(2) + "</color>\n";
+        else
+            msg = "<color=#00FF00>" + msg.Substring(2) + "</color>\n";
+
         ChatLogTxt.text += msg;
     }
 
@@ -289,9 +322,9 @@ public class RoomMgr : MonoBehaviourPunCallbacks
     {
         IsExit = true;
         //로그 메시지에 출력할 문자열 생성
-        string msg = "\n<color=#ff0000>[" + PhotonNetwork.LocalPlayer.NickName + "] Disconnected</color>";
+        string msg = string.Format("{0}_<color=#ff0000>[ {1} ] 나갔습니다.</color>", (int)ChatType.All, PhotonNetwork.LocalPlayer.NickName);
         //RPC 함수 호출
-        pv.RPC("ChatLogMsg", RpcTarget.AllBuffered, msg, 0);
+        pv.RPC("ChatLogMsg", RpcTarget.All, msg, 0);
         //설정이 완료된 후 빌드 파일을 여러개 실행해
         //동일한 룸에 입장해보면 접속 로그가 표기되는 것을 확인할 수 있다.
         //또한 PhotonTarget.AllBuffered 옵션으로
@@ -326,5 +359,32 @@ public class RoomMgr : MonoBehaviourPunCallbacks
         AsyncOperation ao = SceneManager.LoadSceneAsync("LobbyScene");
 
         yield return ao;
+    }
+
+    private void EnterChat()
+    {
+        if (string.IsNullOrEmpty(InputChatIF.text))
+            return;
+
+        int Type = (int)ChatType.All;
+        if (ChatTypeDrop.value == 1)
+            Type = (int)m_TeamInfoProps["MyTeam"];
+
+        string msg = string.Format("{0}_{1} : {2}", Type, GlobalValue.nickName, InputChatIF.text);
+        InputChatIF.text = string.Empty;
+        pv.RPC("ChatLogMsg", RpcTarget.All, msg, 0);
+    }
+
+    private void PlayerSettingBtn_Click(bool IsShow)
+    {
+        if (IsShow)
+            TargetPos_PS = ShowPos_PS;
+        else
+            TargetPos_PS = HidePos_PS;
+    }
+
+    private void PlayerSettingMoveCtrl()
+    {
+        PlayerSettingPanel.transform.localPosition = Vector3.MoveTowards(PlayerSettingPanel.transform.localPosition, TargetPos_PS, MvSpeed_PS * Time.deltaTime);
     }
 }

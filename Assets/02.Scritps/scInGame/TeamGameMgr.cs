@@ -7,14 +7,11 @@ using Photon.Realtime;
 
 public class TeamGameMgr : MonoBehaviourPunCallbacks
 {
-    //RPC ȣ���� ���� PhotonView
     private PhotonView pv;
 
-    // ���� Player Spawn��ġ
     [HideInInspector] public static Vector3[] m_Team1Pos = new Vector3[4];
     [HideInInspector] public static Vector3[] m_Team2Pos = new Vector3[4];
 
-    // ���� ���� ����
     ExitGames.Client.Photon.Hashtable m_Team1WinProps = new ExitGames.Client.Photon.Hashtable();
     ExitGames.Client.Photon.Hashtable m_Team2WinProps = new ExitGames.Client.Photon.Hashtable();
 
@@ -39,10 +36,10 @@ public class TeamGameMgr : MonoBehaviourPunCallbacks
 
     void Awake()
     {
-        //PhotonView ������Ʈ �Ҵ�
+        //PhotonView
         pv = GetComponent<PhotonView>();
 
-        // Player Spawn ��ġ
+        // Player Spawn
         GameObject Team1Pos = GameObject.Find("SpawnPos_1Team");
         if (!ReferenceEquals(Team1Pos, null))
         {
