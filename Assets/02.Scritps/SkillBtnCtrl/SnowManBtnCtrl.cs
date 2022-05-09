@@ -62,11 +62,10 @@ public class SnowManBtnCtrl : MonoBehaviour
                 if (m_PlayerCtrl.m_CurSnowCnt <= 0)
                     return;
 
+                m_PlayerCtrl.m_CurStatus = PlayerState.HoldAction;
+
                 if (m_PlayerCtrl.m_CurAnimState != AnimState.Gather)
-                {
                     m_PlayerCtrl.MySetAnim(AnimState.Gather);
-                    m_PlayerCtrl.m_CurStatus = PlayerState.HoldAction;
-                }
 
                 m_CurCastTime += Time.deltaTime;
                 GameMgr.Inst.CastingBar(true, "´«»ç¶÷ ¼ÒÈ¯", m_CurCastTime, m_CastTime);
@@ -98,7 +97,6 @@ public class SnowManBtnCtrl : MonoBehaviour
             return;
 
         m_IsCasting = true;
-        m_PlayerCtrl.m_CurStatus = PlayerState.HoldAction;
     }
 
     void OnPointerUp(PointerEventData pointerEventData)

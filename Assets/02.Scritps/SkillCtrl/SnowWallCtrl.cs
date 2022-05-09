@@ -3,7 +3,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class SnowWallCtrl : MonoBehaviour
+public class SnowWallCtrl : MonoBehaviour, IDamage
 {
     private SnowData m_SnowData = new SnowData();
     public SnowData SnowData
@@ -28,13 +28,13 @@ public class SnowWallCtrl : MonoBehaviour
     {
         if (other.gameObject.name.Contains("SnowBall"))
         {
-            SnowBallCtrl a_Snow = other.gameObject.GetComponent<SnowBallCtrl>();
-            if (!ReferenceEquals(a_Snow, null))
+            IDamage IDmg = other.gameObject.GetComponent<IDamage>();
+            if (!ReferenceEquals(IDmg, null))
             {
-                if (IsMyTeam(a_Snow.SnowData.AttackerTeam) == false)
-                    GetDamage(a_Snow.SnowData.m_Attck, a_Snow.SnowData.AttackerId);
+                if (IsMyTeam(IDmg.GetData().AttackerTeam) == false)
+                    GetDamage(IDmg.GetData().m_Attck, IDmg.GetData().AttackerId);
 
-                a_Snow.DestroyThisObj();
+                IDmg.DestroyThisObj();
             }
         }
     }
@@ -50,11 +50,27 @@ public class SnowWallCtrl : MonoBehaviour
         Destroy(this.gameObject, 0.0f);
     }
 
+    void UpdateUI_CurHpBar()
+    {
+        if (0 < m_SnowData.m_CurHp)
+        {
+            m_HpBarImg.fillAmount = (float)m_SnowData.m_CurHp / (float)m_SnowData.m_MaxHp;
+
+            if (m_SnowData.m_CurHp <= 0)
+                m_SnowData.m_CurHp = 0;
+        }
+    }
+
     public void Init()
     {
         m_SnowData.m_MaxHp = 50;
         m_SnowData.m_CurHp = m_SnowData.m_MaxHp;
         m_SnowData.m_Attck = 0;
+    }
+
+    public void DestroyThisObj(float tm = 0)
+    {
+        StartCoroutine(this.DestroySnowWall(0.0f));
     }
 
     public bool IsMyTeam(int a_Team)
@@ -74,20 +90,8 @@ public class SnowWallCtrl : MonoBehaviour
         if (m_SnowData.m_CurHp <= 0.0f)
             DestroyThisObj();
     }
-
-    public void DestroyThisObj()
+    public SnowData GetData()
     {
-        StartCoroutine(this.DestroySnowWall(0.0f));
-    }
-
-    void UpdateUI_CurHpBar()
-    {
-        if (0 < m_SnowData.m_CurHp)
-        {
-            m_HpBarImg.fillAmount = (float)m_SnowData.m_CurHp / (float)m_SnowData.m_MaxHp;
-
-            if (m_SnowData.m_CurHp <= 0)
-                m_SnowData.m_CurHp = 0;
-        }
+        return SnowData;
     }
 }

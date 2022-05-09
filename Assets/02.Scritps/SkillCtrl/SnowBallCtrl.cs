@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SnowBallCtrl : MonoBehaviour
+public class SnowBallCtrl : MonoBehaviour, IDamage
 {
     private SnowData m_SnowData = new SnowData();
     public SnowData SnowData
@@ -59,7 +59,8 @@ public class SnowBallCtrl : MonoBehaviour
         m_SnowData.m_CurHp = m_SnowData.m_MaxHp;
         m_SnowData.m_Attck = 20;
     }
-    public void DestroyThisObj()
+
+    public void DestroyThisObj(float tm = 0)
     {
         StartCoroutine(this.DestroySnowBall(0.0f));
     }
@@ -74,11 +75,16 @@ public class SnowBallCtrl : MonoBehaviour
         return IsMyTeam;
     }
 
-    //public void GetDamage(float a_Dmg, int a_AttackerId)
-    //{
-    //    m_SnowData.m_CurHp -= a_Dmg;
+    public void GetDamage(float a_Dmg, int a_AttackerId)
+    {
+        m_SnowData.m_CurHp -= a_Dmg;
 
-    //    if (m_SnowData.m_CurHp <= 0.0f)
-    //        DestroyThisObj();
-    //}
+        if (m_SnowData.m_CurHp <= 0.0f)
+            DestroyThisObj();
+    }
+
+    public SnowData GetData()
+    {
+        return SnowData;
+    }
 }

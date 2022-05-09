@@ -35,7 +35,7 @@ public class SkillSlotCtrl : MonoBehaviour, IDropHandler, IBeginDragHandler, IDr
         if (SkillDragHandler.SelectSkill != null)
             CurInObj = SkillDragHandler.SelectSkill;
         
-        if (eventData.pointerEnter == null || eventData.pointerEnter.name.Contains("Slot") == false)
+        if (eventData.pointerEnter == null || eventData.pointerEnter.name.Contains("Slot_") == false)
         {
             if (CurInObj != null)
             {

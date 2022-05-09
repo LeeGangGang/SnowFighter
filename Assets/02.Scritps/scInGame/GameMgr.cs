@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Photon.Pun;
 using Photon.Realtime;
+using System.Linq;
 
 public enum GameState
 {
@@ -28,6 +29,8 @@ public class GameMgr : MonoBehaviourPunCallbacks, IPunObservable
 
     public GameState m_GameState = GameState.GS_Ready;
     ExitGames.Client.Photon.Hashtable m_StateProps = new ExitGames.Client.Photon.Hashtable();
+    public int m_WinTeam = -1; // -1 : 무승부, 0 : Red팀 승리, 1 : Blue팀 승리
+    ExitGames.Client.Photon.Hashtable m_WinTeamProps = new ExitGames.Client.Photon.Hashtable();
     public static GameMgr Inst;
 
     private int m_RoundCnt = 0;
@@ -68,7 +71,7 @@ public class GameMgr : MonoBehaviourPunCallbacks, IPunObservable
     void Update()
     {
         m_SnowCntText.text = "x " + Camera.main.GetComponent<CameraCtrl>().Player.GetComponent<PlayerCtrl>().m_CurSnowCnt.ToString();
-        m_InGameTmText.text = m_InGameTimer.ToString("0.0");
+        m_InGameTmText.text = System.TimeSpan.FromSeconds(m_InGameTimer).ToString(@"mm\:ss");
 
         if (IsGamePossible() == false)
             return;
@@ -91,7 +94,10 @@ public class GameMgr : MonoBehaviourPunCallbacks, IPunObservable
                         m_WaitTmText.gameObject.SetActive(false);
 
                     if (PhotonNetwork.IsMasterClient) // 마스터 클라이언트만
+                    {
                         m_InGameTimer -= Time.deltaTime;
+                        GameEndCheck();
+                    }
 
                     if (m_InGameTimer <= 120f)
                     {
@@ -104,10 +110,8 @@ public class GameMgr : MonoBehaviourPunCallbacks, IPunObservable
                         if (m_InGameTimer <= 0.0f)
                         {
                             //Game Over 처리
-                            if (PhotonNetwork.IsMasterClient == true)
-                            {
-                                SendGState(GameState.Gs_GameEnd);    
-                            }
+                            if (PhotonNetwork.IsMasterClient)
+                                SendGState(GameState.Gs_GameEnd);
                         }
                     }
                 }
@@ -115,7 +119,9 @@ public class GameMgr : MonoBehaviourPunCallbacks, IPunObservable
             case GameState.Gs_GameEnd:
                 {
                     if (PhotonNetwork.IsMasterClient)
+                    {
                         StartCoroutine(LoadRoomScene());
+                    }
                 }
                 break;
         }   
@@ -163,6 +169,35 @@ public class GameMgr : MonoBehaviourPunCallbacks, IPunObservable
         m_GameState = ReceiveGState();
 
         return true;
+    }
+
+    void GameEndCheck()
+    {
+        int MyTeam = Camera.main.GetComponent<CameraCtrl>().Player.GetComponent<PlayerCtrl>().m_MyTeam;
+        PlayerState MySts = Camera.main.GetComponent<CameraCtrl>().Player.GetComponent<PlayerCtrl>().m_CurStatus;
+        GameObject[] ArrMyPlayer = GameObject.FindGameObjectsWithTag("Player").Where(player => player.GetComponent<PlayerCtrl>().IsMyTeam(MyTeam)).ToArray();
+        GameObject[] ArrEnPlayer = GameObject.FindGameObjectsWithTag("Player").Where(player => !player.GetComponent<PlayerCtrl>().IsMyTeam(MyTeam)).ToArray();
+
+        if (MySts == PlayerState.Die) // MasterClient 기준으로 체크하기
+        {
+            if (ArrMyPlayer.Where(player => player.GetComponent<PlayerCtrl>().m_CurStatus != PlayerState.Die).Count() > 0)
+                return;
+            else
+            {
+                m_WinTeam = MyTeam == 0 ? 1 : 0;
+                SendGState(GameState.Gs_GameEnd);
+            }
+        }
+        else
+        {
+            if (ArrEnPlayer.Where(player => player.GetComponent<PlayerCtrl>().m_CurStatus != PlayerState.Die).Count() > 0)
+                return;
+            else
+            {
+                m_WinTeam = MyTeam == 0 ? 1 : 0;
+                SendGState(GameState.Gs_GameEnd);
+            }
+        }
     }
 
     bool GameStartObserver()
@@ -213,6 +248,10 @@ public class GameMgr : MonoBehaviourPunCallbacks, IPunObservable
         m_StateProps.Clear();
         m_StateProps.Add("GameState", (int)GameState.GS_Ready);
         PhotonNetwork.CurrentRoom.SetCustomProperties(m_StateProps);
+
+        m_WinTeamProps.Clear();
+        m_WinTeamProps.Add("WinTeam", -1);
+        PhotonNetwork.CurrentRoom.SetCustomProperties(m_WinTeamProps);
     }
 
     void SendGState(GameState a_GState)
@@ -228,6 +267,9 @@ public class GameMgr : MonoBehaviourPunCallbacks, IPunObservable
         else
             m_StateProps.Add("GameState", (int)a_GState);
 
+        if (a_GState == GameState.Gs_GameEnd)
+            SendWinTeamProps(m_WinTeam);
+
         PhotonNetwork.CurrentRoom.SetCustomProperties(m_StateProps);
     }
 
@@ -238,8 +280,36 @@ public class GameMgr : MonoBehaviourPunCallbacks, IPunObservable
         if (PhotonNetwork.CurrentRoom.CustomProperties.ContainsKey("GameState") == true)
             a_GS = (GameState)PhotonNetwork.CurrentRoom.CustomProperties["GameState"];
 
+        if (a_GS == GameState.Gs_GameEnd)
+            m_WinTeam = ReceiveWinTeam();
+
         return a_GS;
     }
 
+    void SendWinTeamProps(int a_WinTeam)
+    {
+        if (m_WinTeamProps == null)
+        {
+            m_WinTeamProps = new ExitGames.Client.Photon.Hashtable();
+            m_WinTeamProps.Clear();
+        }
+
+        if (m_WinTeamProps.ContainsKey("WinTeam") == true)
+            m_WinTeamProps["WinTeam"] = a_WinTeam;
+        else
+            m_WinTeamProps.Add("WinTeam", a_WinTeam);
+
+        PhotonNetwork.CurrentRoom.SetCustomProperties(m_WinTeamProps);
+    }
+
+    int ReceiveWinTeam() // GameState 받아서 처리하는 부분
+    {
+        int a_WinTeam = -1;
+
+        if (PhotonNetwork.CurrentRoom.CustomProperties.ContainsKey("WinTeam") == true)
+            a_WinTeam = (int)PhotonNetwork.CurrentRoom.CustomProperties["WinTeam"];
+
+        return a_WinTeam;
+    }
     #endregion
 }

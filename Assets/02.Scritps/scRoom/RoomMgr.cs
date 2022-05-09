@@ -26,12 +26,10 @@ public class RoomMgr : MonoBehaviourPunCallbacks
 
     [Header("PlayerSetting UI")]
     public Button PlayerSettingShowBtn;
-    public Button PlayerSettingHideBtn;
-    public GameObject PlayerSettingPanel;
+    private GameObject m_PlayerSettingPanel;
+    bool IsShow = false;
     float MvSpeed_PS = 2000f;
-    Vector3 TargetPos_PS = new Vector3(990f, 0f, 0f);
-    Vector3 ShowPos_PS = new Vector3(350f, 0f, 0f);
-    Vector3 HidePos_PS = new Vector3(990f, 0f, 0f);
+    Vector3 ShowPos_PS = new Vector3(420f, 0f, 0f);
 
     // 팀 관련 변수
     private bool[] InPlayer = new bool[8]; // 0 ~ 3 : Red팀, 4 ~ 7 : Blue팀
@@ -54,6 +52,9 @@ public class RoomMgr : MonoBehaviourPunCallbacks
     {
         //PhotonView 컴포넌트 할당
         pv = GetComponent<PhotonView>();
+
+        m_PlayerSettingPanel = Instantiate(Resources.Load("PlayerSetting") as GameObject, GameObject.Find("Canvas").transform);
+        m_PlayerSettingPanel.transform.localPosition = new Vector3(395f, 0f, 0f);
 
         PhotonNetwork.AutomaticallySyncScene = true;
     }
@@ -96,9 +97,7 @@ public class RoomMgr : MonoBehaviourPunCallbacks
             });
 
         if (!ReferenceEquals(PlayerSettingShowBtn, null))
-            PlayerSettingShowBtn.onClick.AddListener(() => PlayerSettingBtn_Click(true));
-        if (!ReferenceEquals(PlayerSettingHideBtn, null))
-            PlayerSettingHideBtn.onClick.AddListener(() => PlayerSettingBtn_Click(false));
+            PlayerSettingShowBtn.onClick.AddListener(() => PlayerSettingBtn_Click());
 
         if (!ReferenceEquals(ChatEnterBtn, null))
             ChatEnterBtn.onClick.AddListener(EnterChat);
@@ -138,7 +137,7 @@ public class RoomMgr : MonoBehaviourPunCallbacks
     {
         RefreshPhotonTeam(); // 리스트 UI 갱신
 
-        PlayerSettingMoveCtrl();
+        //PlayerSettingMoveCtrl();
     }
 
     void RefreshPhotonTeam()
@@ -321,14 +320,8 @@ public class RoomMgr : MonoBehaviourPunCallbacks
     public void OnClickExitRoom()
     {
         IsExit = true;
-        //로그 메시지에 출력할 문자열 생성
         string msg = string.Format("{0}_<color=#ff0000>[ {1} ] 나갔습니다.</color>", (int)ChatType.All, PhotonNetwork.LocalPlayer.NickName);
-        //RPC 함수 호출
         pv.RPC("ChatLogMsg", RpcTarget.All, msg, 0);
-        //설정이 완료된 후 빌드 파일을 여러개 실행해
-        //동일한 룸에 입장해보면 접속 로그가 표기되는 것을 확인할 수 있다.
-        //또한 PhotonTarget.AllBuffered 옵션으로
-        //RPC를 호출했기 때문에 나중에 입장해도 기존의 접속 로그 메시지가 표시된다.
 
         // 마지막 사람이 방을 떠날 때 룸의 CustomProperties를 초기화
         if (!ReferenceEquals(PhotonNetwork.PlayerList, null) && PhotonNetwork.PlayerList.Length <= 1)
@@ -375,16 +368,8 @@ public class RoomMgr : MonoBehaviourPunCallbacks
         pv.RPC("ChatLogMsg", RpcTarget.All, msg, 0);
     }
 
-    private void PlayerSettingBtn_Click(bool IsShow)
+    private void PlayerSettingBtn_Click()
     {
-        if (IsShow)
-            TargetPos_PS = ShowPos_PS;
-        else
-            TargetPos_PS = HidePos_PS;
-    }
-
-    private void PlayerSettingMoveCtrl()
-    {
-        PlayerSettingPanel.transform.localPosition = Vector3.MoveTowards(PlayerSettingPanel.transform.localPosition, TargetPos_PS, MvSpeed_PS * Time.deltaTime);
+        m_PlayerSettingPanel.GetComponentInChildren<PlayerSettingCtrl>().IsShow = true;
     }
 }

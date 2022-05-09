@@ -14,7 +14,7 @@ public enum SnowManState
     Return, // 되돌아가기
 }
 
-public class SnowManCtrl : MonoBehaviour, IPunObservable
+public class SnowManCtrl : MonoBehaviour, IPunObservable, IDamage
 {
     private SnowData m_SnowData = new SnowData();
     public SnowData SnowData
@@ -115,13 +115,13 @@ public class SnowManCtrl : MonoBehaviour, IPunObservable
     {
         if (other.gameObject.name.Contains("SnowBall"))
         {
-            SnowBallCtrl a_Snow = other.gameObject.GetComponent<SnowBallCtrl>();
-            if (!ReferenceEquals(a_Snow, null))
+            IDamage IDmg = other.gameObject.GetComponent<IDamage>();
+            if (!ReferenceEquals(IDmg, null))
             {
-                if (IsMyTeam(a_Snow.SnowData.AttackerTeam) == false)
-                    GetDamage(a_Snow.SnowData.m_Attck, a_Snow.SnowData.AttackerId);
+                if (IsMyTeam(IDmg.GetData().AttackerTeam) == false)
+                    GetDamage(IDmg.GetData().m_Attck, IDmg.GetData().AttackerId);
 
-                a_Snow.DestroyThisObj();
+                IDmg.DestroyThisObj();
             }
         }
     }
@@ -135,36 +135,6 @@ public class SnowManCtrl : MonoBehaviour, IPunObservable
             _collider.enabled = false;
 
         Destroy(this.gameObject, 0.0f);
-    }
-
-    public void Init()
-    {
-        m_SnowData.m_MaxHp = 50;
-        m_SnowData.m_CurHp = m_SnowData.m_MaxHp;
-        m_SnowData.m_Attck = 0;
-    }
-
-    public bool IsMyTeam(int a_Team)
-    {
-        bool IsMyTeam = false;
-
-        if (a_Team == m_SnowData.AttackerTeam)
-            IsMyTeam = true;
-
-        return IsMyTeam;
-    }
-
-    public void GetDamage(float a_Dmg, int a_AttackerId)
-    {
-        m_SnowData.m_CurHp -= a_Dmg;
-        UpdateUI_CurHpBar();
-        if (m_SnowData.m_CurHp <= 0.0f)
-            DestroyThisObj();
-    }
-
-    public void DestroyThisObj()
-    {
-        StartCoroutine(this.DestroySnowWall(0.0f));
     }
 
     #region --- 눈덩이 던지기
@@ -335,5 +305,38 @@ public class SnowManCtrl : MonoBehaviour, IPunObservable
             m_CurPos = (Vector3)stream.ReceiveNext();
             m_CurRot = (Quaternion)stream.ReceiveNext();
         }
+    }
+    public void Init()
+    {
+        m_SnowData.m_MaxHp = 50;
+        m_SnowData.m_CurHp = m_SnowData.m_MaxHp;
+        m_SnowData.m_Attck = 0;
+    }
+
+    public void DestroyThisObj(float tm = 0)
+    {
+        StartCoroutine(this.DestroySnowWall(0.0f));
+    }
+
+    public bool IsMyTeam(int a_Team)
+    {
+        bool IsMyTeam = false;
+
+        if (a_Team == m_SnowData.AttackerTeam)
+            IsMyTeam = true;
+
+        return IsMyTeam;
+    }
+
+    public void GetDamage(float a_Dmg, int a_AttackerId)
+    {
+        m_SnowData.m_CurHp -= a_Dmg;
+        UpdateUI_CurHpBar();
+        if (m_SnowData.m_CurHp <= 0.0f)
+            DestroyThisObj();
+    }
+    public SnowData GetData()
+    {
+        return SnowData;
     }
 }

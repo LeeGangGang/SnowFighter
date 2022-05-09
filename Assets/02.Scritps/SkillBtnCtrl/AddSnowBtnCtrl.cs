@@ -60,11 +60,10 @@ public class AddSnowBtnCtrl : MonoBehaviour
                 if (a_MaxSnowCnt <= a_CurSnowCnt)
                     return;
 
+                m_PlayerCtrl.m_CurStatus = PlayerState.HoldAction;
+
                 if (m_PlayerCtrl.m_CurAnimState != AnimState.Gather)
-                {
                     m_PlayerCtrl.MySetAnim(AnimState.Gather);
-                    m_PlayerCtrl.m_CurStatus = PlayerState.HoldAction;
-                }
 
                 m_CurCastTime += Time.deltaTime;
                 GameMgr.Inst.CastingBar(true, "´« ¹¶Ä¡±â", m_CurCastTime, m_CastTime);
@@ -95,7 +94,6 @@ public class AddSnowBtnCtrl : MonoBehaviour
             return;
 
         m_IsCasting = true;
-        m_PlayerCtrl.m_CurStatus = PlayerState.HoldAction;
     }
 
     void OnPointerUp(PointerEventData pointerEventData)

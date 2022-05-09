@@ -115,6 +115,12 @@ public class TitleMgr : MonoBehaviour
         if (!ReferenceEquals(N["killCnt"], null))
             GlobalValue.lose = N["killCnt"].AsInt;
 
+        if (!ReferenceEquals(N["skillSet"], null))
+        {
+            GlobalValue.StrskillSet = N["skillSet"];
+            GlobalValue.skillSet = PlayerSettingCtrl.StrToArr(GlobalValue.StrskillSet);
+        }
+
         SceneManager.LoadScene("LobbyScene");
     }
 

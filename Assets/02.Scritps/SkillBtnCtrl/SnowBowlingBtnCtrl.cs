@@ -62,6 +62,8 @@ public class SnowBowlingBtnCtrl : MonoBehaviour
                 if (m_PlayerCtrl.m_CurSnowCnt <= 0)
                     return;
 
+                m_PlayerCtrl.m_CurStatus = PlayerState.Bowling;
+
                 m_CurCastTime += Time.deltaTime;
                 GameMgr.Inst.CastingBar(true, "´« ±¼¸®±â", m_CurCastTime, m_CastTime);
                 if (m_CurCastTime <= m_CastTime)
@@ -99,8 +101,10 @@ public class SnowBowlingBtnCtrl : MonoBehaviour
         if (m_PlayerCtrl.m_CurSnowCnt <= 0)
             return;
 
+        if (m_ThisBtn.enabled == false)
+            return;
+
         m_IsCasting = true;
-        m_PlayerCtrl.m_CurStatus= PlayerState.Bowling;
     }
 
     void OnPointerUp(PointerEventData pointerEventData)

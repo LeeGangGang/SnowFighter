@@ -10,6 +10,12 @@ public class PhotonInit : MonoBehaviourPunCallbacks
 {
     static public bool isFocus = true;
 
+    public Button m_PlayerSettingBtn;
+    private GameObject m_PlayerSettingPanel;
+    bool IsShow = false;
+    float MvSpeed_PS = 2000f;
+    Vector3 ShowPos_PS = new Vector3(420f, 0f, 0f);
+
     public Button m_ConfigBtn;
     public GameObject m_Config_Pop;
     public Button m_LogoutBtn;
@@ -31,7 +37,9 @@ public class PhotonInit : MonoBehaviourPunCallbacks
     {
         //PhotonNetwork.SendRate = 40;            
         //PhotonNetwork.SerializationRate = 20;
-
+        m_PlayerSettingPanel = Instantiate(Resources.Load("PlayerSetting") as GameObject, GameObject.Find("Canvas").transform);
+        m_PlayerSettingPanel.transform.localPosition = new Vector3(395f, 0f, 0f);
+        
         if (!PhotonNetwork.IsConnected)
         {
             //1번, 포톤 클라우드에 접속
@@ -58,6 +66,14 @@ public class PhotonInit : MonoBehaviourPunCallbacks
 
         if (!ReferenceEquals(m_LogoutBtn, null))
             m_LogoutBtn.onClick.AddListener(LogoutBtn_Click);
+
+        if (!ReferenceEquals(m_PlayerSettingBtn, null))
+            m_PlayerSettingBtn.onClick.AddListener(PlayerSettingBtn_Click);
+    }
+
+    void Update()
+    {
+        //PlayerSettingMoveCtrl();
     }
 
     //2번, ConnectUsingSettings() 함수 호출에 대한 서버 접속이 성공하면 호출되는 콜백 함수
@@ -237,5 +253,10 @@ public class PhotonInit : MonoBehaviourPunCallbacks
 
         GlobalValue.ClearData();
         SceneManager.LoadScene("TitleScene");
+    }
+
+    private void PlayerSettingBtn_Click()
+    {
+        m_PlayerSettingPanel.GetComponentInChildren<PlayerSettingCtrl>().IsShow = true;
     }
 }

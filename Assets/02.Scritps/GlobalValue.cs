@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class GlobalValue
@@ -10,6 +11,9 @@ public class GlobalValue
     public static int lose = 0;
     public static int kill = 0;
 
+    public static string StrskillSet = "";
+    public static int[] skillSet = new int[2];
+
     public static void ClearData()
     {
         userID = "";
@@ -17,6 +21,7 @@ public class GlobalValue
         win = 0;
         lose = 0;
         kill = 0;
+        skillSet = Enumerable.Repeat(-1, 2).ToArray();
     }
 }
 

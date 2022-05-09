@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SnowBowlingCtrl : MonoBehaviour
+public class SnowBowlingCtrl : MonoBehaviour, IDamage
 {
     private SnowData m_SnowData = new SnowData();
     public SnowData SnowData
@@ -85,6 +85,21 @@ public class SnowBowlingCtrl : MonoBehaviour
         m_SnowData.m_Attck = 50;
     }
 
+    public void DestroyThisObj(float tm = 0.0f)
+    {
+        if (!ReferenceEquals(m_PlayerCtrl, null))
+            m_PlayerCtrl.m_CurStatus = PlayerState.Idle;
+
+        if (m_PlayerCtrl.pv.Owner.ActorNumber == SnowData.AttackerId)
+        {
+            GameObject a_SnowBowlingBtn = GameObject.Find("SnowBowlingBtn");
+            if (!ReferenceEquals(a_SnowBowlingBtn, null))
+                a_SnowBowlingBtn.GetComponent<SnowBowlingBtnCtrl>().EndSnowBowling(m_IsRolling);
+        }
+
+        StartCoroutine(this.DestroySnowBowling(tm));
+    }
+
     public bool IsMyTeam(int a_Team)
     {
         bool IsMyTeam = false;
@@ -102,18 +117,8 @@ public class SnowBowlingCtrl : MonoBehaviour
             DestroyThisObj();
     }
 
-    public void DestroyThisObj(float tm = 0.0f)
+    public SnowData GetData()
     {
-        if (!ReferenceEquals(m_PlayerCtrl, null))
-            m_PlayerCtrl.m_CurStatus = PlayerState.Idle;
-
-        if (m_PlayerCtrl.pv.Owner.ActorNumber == SnowData.AttackerId)
-        {
-            GameObject a_SnowBowlingBtn = GameObject.Find("SnowBowlingBtn");
-            if (!ReferenceEquals(a_SnowBowlingBtn, null))
-                a_SnowBowlingBtn.GetComponent<SnowBowlingBtnCtrl>().EndSnowBowling(m_IsRolling);
-        }
-
-        StartCoroutine(this.DestroySnowBowling(tm));
+        return SnowData;
     }
 }

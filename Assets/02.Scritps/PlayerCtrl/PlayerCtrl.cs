@@ -378,6 +378,8 @@ public class PlayerCtrl : MonoBehaviourPunCallbacks, IPunObservable
             m_NetHp = (float)stream.ReceiveNext();
 
             m_NetAnimState = (AnimState)stream.ReceiveNext();
+            if (m_NetAnimState == AnimState.Die)
+                m_CurStatus = PlayerState.Die;
         }
     }
 

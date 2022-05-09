@@ -63,6 +63,7 @@
     <Compile Include="Assets\Photon\PhotonLibs\WebSocket\SocketWebTcp.cs" />
     <Compile Include="Assets\02.Scritps\SkillCtrl\SnowBowlingCtrl.cs" />
     <Compile Include="Assets\04.Models\Frost\FrostEffect.cs" />
+    <Compile Include="Assets\02.Scritps\PlayerSetting\PlayerSettingCtrl.cs" />
     <Compile Include="Assets\02.Scritps\SkillCtrl\SnowBallCtrl.cs" />
     <Compile Include="Assets\Photon\PhotonChat\Demos\DemoChat\ChatAppIdCheckerUI.cs" />
     <Compile Include="Assets\Photon\PhotonChat\Demos\DemoChat\AppSettingsExtensions.cs" />
@@ -72,10 +73,11 @@
     <Compile Include="Assets\02.Scritps\scTitle\TitleMgr.cs" />
     <Compile Include="Assets\02.Scritps\GlobalValue.cs" />
     <Compile Include="Assets\04.Models\AurynSky\WinterArena\Scripts\Rotator.cs" />
-    <Compile Include="Assets\02.Scritps\PlayerSkillCtrl.cs" />
-    <Compile Include="Assets\02.Scritps\PlayerAnimEvent.cs" />
-    <Compile Include="Assets\02.Scritps\PlayerCtrl.cs" />
+    <Compile Include="Assets\02.Scritps\PlayerCtrl\PlayerSkillCtrl.cs" />
+    <Compile Include="Assets\02.Scritps\PlayerCtrl\PlayerAnimEvent.cs" />
+    <Compile Include="Assets\02.Scritps\PlayerCtrl\PlayerCtrl.cs" />
     <Compile Include="Assets\02.Scritps\SoundManager.cs" />
+    <Compile Include="Assets\02.Scritps\IDamage.cs" />
     <Compile Include="Assets\Photon\PhotonChat\Demos\DemoChat\ChannelSelector.cs" />
     <Compile Include="Assets\02.Scritps\SkillCtrl\SnowWallCtrl.cs" />
     <Compile Include="Assets\02.Scritps\scLobby\PhotonInit.cs" />
@@ -85,21 +87,22 @@
     <Compile Include="Assets\02.Scritps\scInGame\IndividualGameMgr.cs" />
     <Compile Include="Assets\02.Scritps\scLobby\RoomData.cs" />
     <Compile Include="Assets\Photon\PhotonChat\Demos\DemoChat\FriendItem.cs" />
+    <Compile Include="Assets\02.Scritps\PlayerSetting\SkillSlotCtrl.cs" />
     <Compile Include="Assets\02.Scritps\BillBoard.cs" />
     <Compile Include="Assets\02.Scritps\scInGame\TeamGameMgr.cs" />
     <Compile Include="Assets\02.Scritps\SkillBtnCtrl\SnowBowlingBtnCtrl.cs" />
+    <Compile Include="Assets\02.Scritps\PlayerSetting\SkillDragHandler.cs" />
     <Compile Include="Assets\02.Scritps\SkillCtrl\SnowManCtrl.cs" />
     <Compile Include="Assets\Photon\PhotonChat\Demos\DemoChat\ChatGui.cs" />
     <Compile Include="Assets\Photon\PhotonChat\Demos\Common\TextToggleIsOnTransition.cs" />
     <Compile Include="Assets\02.Scritps\SkillBtnCtrl\SnowBallBtnCtrl.cs" />
+    <Compile Include="Assets\02.Scritps\CameraResolution.cs" />
     <Compile Include="Assets\02.Scritps\ConfigBoxCtrl.cs" />
     <Compile Include="Assets\Photon\PhotonChat\Demos\Common\OnStartDelete.cs" />
     <Compile Include="Assets\02.Scritps\CameraCtrl.cs" />
     <Compile Include="Assets\02.Scritps\scInGame\JoyStickCtrl.cs" />
     <Compile Include="Assets\02.Scritps\scLobby\CreateRoomMgr.cs" />
     <Compile Include="Assets\04.Models\AurynSky\WinterArena\Scripts\ChestDemo.cs" />
-    <Compile Include="Assets\02.Scritps\PlayerSetting\SkillSlotCtrl.cs" />
-    <Compile Include="Assets\02.Scritps\PlayerSetting\SkillDragHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Photon\PhotonLibs\netstandard2.0\Photon3Unity3D.xml" />
