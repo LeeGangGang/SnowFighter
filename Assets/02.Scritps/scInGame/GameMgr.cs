@@ -5,12 +5,14 @@ using UnityEngine.UI;
 using Photon.Pun;
 using Photon.Realtime;
 using System.Linq;
+using UnityEngine.SceneManagement;
 
 public enum GameState
 {
     GS_Ready = 0,
     GS_Playing,
     Gs_GameEnd,
+    Gs_GameExit,
 }
 
 public class GameMgr : MonoBehaviourPunCallbacks, IPunObservable
@@ -22,6 +24,8 @@ public class GameMgr : MonoBehaviourPunCallbacks, IPunObservable
     public Button m_ConfigBtn;
     public GameObject m_Config_Pop;
     public Text m_SnowCntText;
+
+    public Transform[] m_ArrSkillSlot = new Transform[2];
 
     public GameObject m_CastingObj;
     public Image m_CastingBar;
@@ -35,6 +39,11 @@ public class GameMgr : MonoBehaviourPunCallbacks, IPunObservable
 
     private int m_RoundCnt = 0;
 
+    [Header("--- GameEndPanel UI ---")]
+    public GameObject m_GameEndPanel;
+    public Text m_GameEndInfoTxt;
+    public Button m_ExitBtn;
+
     [Header("--- StartTimer UI ---")]
     public Text m_WaitTmText; // 게임 시작후 카운트 3, 2, 1, 0
     [HideInInspector] float m_GoWaitGame = 4f; // 게임 시작후 카운트 Text UI
@@ -45,15 +54,26 @@ public class GameMgr : MonoBehaviourPunCallbacks, IPunObservable
 
     void Awake()
     {
+        PhotonNetwork.AutomaticallySyncScene = true;
+
         Inst = this;
 
-        m_GameState = GameState.GS_Ready;
         m_InGameTimer = 180f;
+        m_WinTeam = -1;
 
         // PhotonView 컴포넌트 할당
         pv = GetComponent<PhotonView>();
 
-        //모든 클라우드의 네트워크 메시지 수신을 다시 연결
+        for (int i = 0; i < GlobalValue.skillSet.Length; i++)
+        {
+            if (GlobalValue.skillSet[i] == -1)
+                continue;
+
+            SkillType type = (SkillType)GlobalValue.skillSet[i];
+            GameObject a_SkillBtnPrefab = Resources.Load<GameObject>(string.Format("SkillBtnPrefabs/{0}Btn", type.ToString()));
+            GameObject a_SkillBtn = Instantiate(a_SkillBtnPrefab, m_ArrSkillSlot[i]);
+            a_SkillBtn.name = string.Format("{0}Btn", type.ToString());
+        }
 
         InitGStateProps();
     }
@@ -65,6 +85,9 @@ public class GameMgr : MonoBehaviourPunCallbacks, IPunObservable
 
         if (!ReferenceEquals(m_ConfigBtn, null))
             m_ConfigBtn.onClick.AddListener(ConfigBtn_Click);
+
+        if (!ReferenceEquals(m_ExitBtn, null))
+            m_ExitBtn.onClick.AddListener(ExitBtn_Click);
     }
 
     // Update is called once per frame
@@ -118,13 +141,36 @@ public class GameMgr : MonoBehaviourPunCallbacks, IPunObservable
                 break;
             case GameState.Gs_GameEnd:
                 {
-                    if (PhotonNetwork.IsMasterClient)
-                    {
-                        StartCoroutine(LoadRoomScene());
-                    }
+                    ShowGameEndPanel();
                 }
                 break;
         }   
+    }
+
+    void ShowGameEndPanel()
+    {
+        m_GameState = GameState.Gs_GameExit;
+        m_GameEndPanel.SetActive(true);
+        if (PhotonNetwork.IsMasterClient == false)
+            m_ExitBtn.gameObject.SetActive(false);
+
+        if (m_WinTeam == -1)
+            m_GameEndInfoTxt.text = "무승부";
+        else if (m_WinTeam == 0)
+            m_GameEndInfoTxt.text = "Red팀 승리";
+        else
+            m_GameEndInfoTxt.text = "Blue팀 승리";
+    }
+
+    void ExitBtn_Click()
+    {
+        StartCoroutine(LoadRoomScene());
+    }
+
+    IEnumerator LoadRoomScene()
+    {
+        PhotonNetwork.LoadLevel("RoomScene");
+        yield return null;
     }
 
     public void ConfigBtn_Click()
@@ -136,12 +182,6 @@ public class GameMgr : MonoBehaviourPunCallbacks, IPunObservable
         a_Config_Pop.transform.SetParent(Popup_Canvas.transform, false);
     }
 
-    IEnumerator LoadRoomScene() //최종 InGame 씬 로딩
-    {
-        PhotonNetwork.LoadLevel("RoomScene");
-        PhotonNetwork.AutomaticallySyncScene = false;
-        yield return null;
-    }
 
     public void CreatePlayer(Vector3 pos)
     {
@@ -194,7 +234,7 @@ public class GameMgr : MonoBehaviourPunCallbacks, IPunObservable
                 return;
             else
             {
-                m_WinTeam = MyTeam == 0 ? 1 : 0;
+                m_WinTeam = MyTeam == 0 ? 0 : 1;
                 SendGState(GameState.Gs_GameEnd);
             }
         }
@@ -220,6 +260,10 @@ public class GameMgr : MonoBehaviourPunCallbacks, IPunObservable
                 m_GoWaitGame = 0f;
                 IsStart = true;
             }
+
+            // Photon 딜레이 때문인지 여기서 초기화
+            m_GameState = GameState.GS_Ready;
+            m_GameEndPanel.SetActive(false);
         }
 
         return IsStart;

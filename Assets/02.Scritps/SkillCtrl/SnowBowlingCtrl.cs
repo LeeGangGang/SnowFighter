@@ -88,13 +88,15 @@ public class SnowBowlingCtrl : MonoBehaviour, IDamage
     public void DestroyThisObj(float tm = 0.0f)
     {
         if (!ReferenceEquals(m_PlayerCtrl, null))
-            m_PlayerCtrl.m_CurStatus = PlayerState.Idle;
-
-        if (m_PlayerCtrl.pv.Owner.ActorNumber == SnowData.AttackerId)
         {
-            GameObject a_SnowBowlingBtn = GameObject.Find("SnowBowlingBtn");
-            if (!ReferenceEquals(a_SnowBowlingBtn, null))
-                a_SnowBowlingBtn.GetComponent<SnowBowlingBtnCtrl>().EndSnowBowling(m_IsRolling);
+            if (m_PlayerCtrl.pv.Owner.ActorNumber == SnowData.AttackerId)
+            {
+                m_PlayerCtrl.m_CurStatus = PlayerState.Idle;
+
+                GameObject a_SnowBowlingBtn = GameObject.Find("SnowBowlingBtn");
+                if (a_SnowBowlingBtn != null)
+                    a_SnowBowlingBtn.GetComponent<SnowBowlingBtnCtrl>().EndSnowBowling(m_IsRolling);
+            }
         }
 
         StartCoroutine(this.DestroySnowBowling(tm));

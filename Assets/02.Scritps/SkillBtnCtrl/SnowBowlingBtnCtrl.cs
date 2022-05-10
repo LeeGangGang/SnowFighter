@@ -17,7 +17,7 @@ public class SnowBowlingBtnCtrl : MonoBehaviour
     [HideInInspector] float m_CastTime = 10.0f; // 최대 차징 시간
     [HideInInspector] float m_CurCastTime = 0.0f; // 현재 차징 시간
 
-    [HideInInspector] float m_CoolTime = 1.0f; // 쿨타임
+    [HideInInspector] float m_CoolTime = 2.0f; // 쿨타임
     [HideInInspector] float m_CurCoolTime = 0.0f; // 현재 쿨타임
 
     // Start is called before the first frame update
@@ -101,7 +101,7 @@ public class SnowBowlingBtnCtrl : MonoBehaviour
         if (m_PlayerCtrl.m_CurSnowCnt <= 0)
             return;
 
-        if (m_ThisBtn.enabled == false)
+        if (m_CurCoolTime > 0f)
             return;
 
         m_IsCasting = true;
@@ -113,6 +113,9 @@ public class SnowBowlingBtnCtrl : MonoBehaviour
             return;
 
         if (m_PlayerCtrl.m_CurStatus == PlayerState.Die)
+            return;
+
+        if (m_CurCoolTime > 0f)
             return;
 
         if (m_IsCasting)

@@ -50,13 +50,11 @@ public class RoomMgr : MonoBehaviourPunCallbacks
 
     void Awake()
     {
+        PhotonNetwork.AutomaticallySyncScene = true;
         //PhotonView 컴포넌트 할당
         pv = GetComponent<PhotonView>();
-
         m_PlayerSettingPanel = Instantiate(Resources.Load("PlayerSetting") as GameObject, GameObject.Find("Canvas").transform);
         m_PlayerSettingPanel.transform.localPosition = new Vector3(395f, 0f, 0f);
-
-        PhotonNetwork.AutomaticallySyncScene = true;
     }
 
     // Start is called before the first frame update
@@ -136,8 +134,6 @@ public class RoomMgr : MonoBehaviourPunCallbacks
     void Update()
     {
         RefreshPhotonTeam(); // 리스트 UI 갱신
-
-        //PlayerSettingMoveCtrl();
     }
 
     void RefreshPhotonTeam()
@@ -205,7 +201,8 @@ public class RoomMgr : MonoBehaviourPunCallbacks
         PhotonNetwork.CurrentRoom.IsVisible = false;
 
         PhotonNetwork.LoadLevel("InGameScene");
-        PhotonNetwork.AutomaticallySyncScene = false;
+
+        PhotonNetwork.IsMessageQueueRunning = true;
         yield return null;
     }
 

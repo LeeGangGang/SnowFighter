@@ -88,16 +88,14 @@ public class PlayerSkillCtrl : MonoBehaviour
             return;
 
         RollingSnowRPC( a_Dir, a_Speed );
-        pv.RPC( "RollingSnowRPC", RpcTarget.Others, a_Dir, a_Speed );
+        pv.RPC("RollingSnowRPC", RpcTarget.Others, a_Dir, a_Speed );
     }
 
     [PunRPC]
     public void RollingSnowRPC( Vector3 a_Dir, float a_Speed)
     {
-        Debug.Log( "RollingSnow1" );
         if (m_CurSnowBowling != null)
         {
-            Debug.Log( "RollingSnow2" );
             m_CurSnowBowling.GetComponent<SnowBowlingCtrl>().RollingSnow( a_Dir, a_Speed );
         }
     }

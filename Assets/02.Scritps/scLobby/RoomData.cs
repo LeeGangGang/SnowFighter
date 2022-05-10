@@ -45,6 +45,8 @@ public class RoomData : MonoBehaviour
         m_RoomNameTxt.text = m_RoomName;
         if (!string.IsNullOrEmpty(m_RoomPass))
             m_PrivateImg.gameObject.SetActive(true);
+        else
+            m_PrivateImg.gameObject.SetActive(false);
 
         m_ConnectInfoTxt.text = string.Format("({0}/{1})", m_ConnectPlayer, m_MaxPlayer);
     }

@@ -10,7 +10,7 @@ public enum SkillType
 {
     SnowWall = 0,
     SnowBowling,
-    SnowMan,
+    SpawnSnowMan,
 }
 
 public class PlayerSettingCtrl : MonoBehaviour
@@ -116,7 +116,7 @@ public class PlayerSettingCtrl : MonoBehaviour
             if (sReturn.Contains("OK_"))
             {
                 Array.Copy(m_SelectSkill, GlobalValue.skillSet, GlobalValue.skillSet.Length);
-                IsShow = true;
+                IsShow = false;
             }
         }
         else
@@ -144,7 +144,6 @@ public class PlayerSettingCtrl : MonoBehaviour
         }
         return Return;
     }
-
 
     public static int[] StrToArr( string str)
     {
