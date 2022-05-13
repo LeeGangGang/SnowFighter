@@ -17,7 +17,7 @@ public class SnowBallCtrl : MonoBehaviour, IDamage
     private Rigidbody _rigidbody = null;
 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         Init();
 
@@ -43,14 +43,9 @@ public class SnowBallCtrl : MonoBehaviour, IDamage
 
     void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.name.Contains("Player"))
-        {
-            PlayerCtrl a_Player = other.gameObject.GetComponent<PlayerCtrl>();
-            if (IsMyTeam(a_Player.m_MyTeam))
-                return;
-        }
-
-        DestroyThisObj();
+        if (!other.gameObject.name.Contains("Player") && 
+            !other.gameObject.name.Contains("SnowMan"))
+            DestroyThisObj();
     }
 
     public void Init()
@@ -62,7 +57,7 @@ public class SnowBallCtrl : MonoBehaviour, IDamage
 
     public void DestroyThisObj(float tm = 0)
     {
-        StartCoroutine(this.DestroySnowBall(0.0f));
+        StartCoroutine(this.DestroySnowBall(tm));
     }
 
     public bool IsMyTeam(int a_Team)

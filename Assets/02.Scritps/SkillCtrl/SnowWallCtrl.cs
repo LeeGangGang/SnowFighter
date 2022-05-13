@@ -26,7 +26,7 @@ public class SnowWallCtrl : MonoBehaviour, IDamage
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.name.Contains("SnowBall"))
+        if (other.gameObject.name.Contains("SnowBall") || other.gameObject.name.Contains("SnowBowling"))
         {
             IDamage IDmg = other.gameObject.GetComponent<IDamage>();
             if (!ReferenceEquals(IDmg, null))

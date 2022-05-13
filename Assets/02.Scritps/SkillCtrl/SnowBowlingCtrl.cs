@@ -20,7 +20,7 @@ public class SnowBowlingCtrl : MonoBehaviour, IDamage
     private Rigidbody _rigidbody = null;
 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         Init();
 
@@ -53,14 +53,9 @@ public class SnowBowlingCtrl : MonoBehaviour, IDamage
         if (other.gameObject.name.Equals("MyPlayer"))
             return;
 
-        if (other.gameObject.name.Contains("Player"))
-        {
-            PlayerCtrl a_Player = other.gameObject.GetComponent<PlayerCtrl>();
-            if (IsMyTeam(a_Player.m_MyTeam))
-                return;
-        }
-
-        DestroyThisObj();
+        if (!other.gameObject.name.Contains("Player") &&
+            !other.gameObject.name.Contains("SnowMan"))
+            DestroyThisObj();
     }
 
     IEnumerator DestroySnowBowling(float tm = 0.0f)

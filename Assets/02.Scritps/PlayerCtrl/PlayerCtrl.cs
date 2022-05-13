@@ -108,28 +108,15 @@ public class PlayerCtrl : MonoBehaviourPunCallbacks, IPunObservable
     private void OnTriggerEnter(Collider other)
     {
         Debug.Log("Hit : " + other.gameObject.name);
-        if (other.gameObject.name.Contains("SnowBall"))
+        if (other.gameObject.name.Contains("SnowBall") || other.gameObject.name.Contains("SnowBowling"))
         {
-            SnowBallCtrl a_Snow = other.gameObject.GetComponent<SnowBallCtrl>();
-            if (!ReferenceEquals(a_Snow, null))
+            IDamage IDmg = other.gameObject.GetComponent<IDamage>();
+            if (!ReferenceEquals(IDmg, null))
             {
-                if (IsMyTeam(a_Snow.SnowData.AttackerTeam) == false)
-                {
-                    GetDamage(a_Snow.SnowData.m_Attck, a_Snow.SnowData.AttackerId);
-                    a_Snow.DestroyThisObj();
-                }
-            }
-        }
-        else if (other.gameObject.name.Contains("SnowBowling"))
-        {
-            SnowBowlingCtrl a_Snow = other.gameObject.GetComponent<SnowBowlingCtrl>();
-            if (!ReferenceEquals(a_Snow, null))
-            {
-                if (IsMyTeam(a_Snow.SnowData.AttackerTeam) == false)
-                {
-                    GetDamage(a_Snow.SnowData.m_Attck, a_Snow.SnowData.AttackerId);
-                    a_Snow.DestroyThisObj();
-                }
+                if (IsMyTeam(IDmg.GetData().AttackerTeam) == false)
+                    GetDamage(IDmg.GetData().m_Attck, IDmg.GetData().AttackerId);
+                
+                IDmg.DestroyThisObj();
             }
         }
     }
