@@ -48,6 +48,10 @@ MonoBehaviour:
   - RollingSnowRPC
   - CreateSnowManRPC
   - AttRangeOnOffRPC
+  - CreateCatapultRPC
+  - CatapultShotRPC
+  - DestoryCatapultRPC
+  - DestoryAttProjectorRPC
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 1

@@ -49,7 +49,8 @@ public class SnowManBtnCtrl : MonoBehaviour
 
         CoolTime_Update();
 
-        if (m_PlayerCtrl.m_CurStatus == PlayerState.Die)
+        if (m_PlayerCtrl.m_CurStatus == PlayerState.Die || 
+            m_PlayerCtrl.m_CurStatus == PlayerState.Catapult)
             return;
 
         if (m_ThisBtn.enabled) // ƒ≈∏¿”¡ﬂ¿Ã æ∆¥“∂ß
@@ -59,7 +60,7 @@ public class SnowManBtnCtrl : MonoBehaviour
                 if (m_PlayerCtrl == null || m_SkillCtrl == null || m_PlayerTr == null)
                     return;
 
-                if (m_PlayerCtrl.m_CurSnowCnt <= 0)
+                if (m_PlayerCtrl.m_CurSnowCnt <= 1)
                     return;
 
                 m_PlayerCtrl.m_CurStatus = PlayerState.HoldAction;
@@ -79,7 +80,7 @@ public class SnowManBtnCtrl : MonoBehaviour
                     Quaternion SnowManRot = m_PlayerTr.rotation;
 
                     m_SkillCtrl.CreateSnowMan(SnowManPos, SnowManRot);
-                    m_PlayerCtrl.SendSnowCnt(m_PlayerCtrl.m_CurSnowCnt--);
+                    m_PlayerCtrl.SendSnowCnt(m_PlayerCtrl.m_CurSnowCnt - 2);
                 }
             }
         }
@@ -90,10 +91,11 @@ public class SnowManBtnCtrl : MonoBehaviour
         if (m_PlayerCtrl == null)
             return;
 
-        if (m_PlayerCtrl.m_CurStatus == PlayerState.Die)
+        if (m_PlayerCtrl.m_CurStatus == PlayerState.Die ||
+            m_PlayerCtrl.m_CurStatus == PlayerState.Catapult)
             return;
 
-        if (m_PlayerCtrl.m_CurSnowCnt <= 0)
+        if (m_PlayerCtrl.m_CurSnowCnt <= 1)
             return;
 
         m_IsCasting = true;
@@ -104,7 +106,8 @@ public class SnowManBtnCtrl : MonoBehaviour
         if (m_PlayerCtrl == null)
             return;
 
-        if (m_PlayerCtrl.m_CurStatus == PlayerState.Die)
+        if (m_PlayerCtrl.m_CurStatus == PlayerState.Die ||
+            m_PlayerCtrl.m_CurStatus == PlayerState.Catapult)
             return;
 
         EndSnowMan();
@@ -125,16 +128,12 @@ public class SnowManBtnCtrl : MonoBehaviour
         {
             m_CurCoolTime -= Time.deltaTime;
             m_SkillCoolImg.fillAmount = m_CurCoolTime / m_CoolTime;
-            //Cool_Label.text = ((int)Cool_float).ToString();
-
             m_ThisBtn.enabled = false;
         }
         else
         {
             m_CurCoolTime = 0f;
             m_SkillCoolImg.fillAmount = 0f;
-            //Cool_Label.text = "";
-
             m_ThisBtn.enabled = true;
         }
     }

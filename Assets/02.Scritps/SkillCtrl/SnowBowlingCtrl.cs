@@ -53,8 +53,8 @@ public class SnowBowlingCtrl : MonoBehaviour, IDamage
         if (other.gameObject.name.Equals("MyPlayer"))
             return;
 
-        if (!other.gameObject.name.Contains("Player") &&
-            !other.gameObject.name.Contains("SnowMan"))
+        if (!other.CompareTag("Player") &&
+            !other.CompareTag("SnowMan"))
             DestroyThisObj();
     }
 
@@ -77,7 +77,7 @@ public class SnowBowlingCtrl : MonoBehaviour, IDamage
     {
         m_SnowData.m_MaxHp = 50;
         m_SnowData.m_CurHp = m_SnowData.m_MaxHp;
-        m_SnowData.m_Attck = 50;
+        m_SnowData.m_Attck = 45;
     }
 
     public void DestroyThisObj(float tm = 0.0f)

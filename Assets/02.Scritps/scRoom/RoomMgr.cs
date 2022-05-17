@@ -84,6 +84,7 @@ public class RoomMgr : MonoBehaviourPunCallbacks
         if (!ReferenceEquals(ReadyBtn, null))
             ReadyBtn.onClick.AddListener(() =>
             {
+                SoundManager.Instance.PlayUISound("Button");
                 IsReady = !IsReady;
                 SendReady();
             });
@@ -91,14 +92,17 @@ public class RoomMgr : MonoBehaviourPunCallbacks
         if (!ReferenceEquals(StartBtn, null))
             StartBtn.onClick.AddListener(() =>
             {
+                SoundManager.Instance.PlayUISound("Button");
                 StartCoroutine(LoadInGameScene());    
             });
 
         if (!ReferenceEquals(PlayerSettingShowBtn, null))
-            PlayerSettingShowBtn.onClick.AddListener(() => PlayerSettingBtn_Click());
+            PlayerSettingShowBtn.onClick.AddListener(PlayerSettingBtn_Click);
 
         if (!ReferenceEquals(ChatEnterBtn, null))
             ChatEnterBtn.onClick.AddListener(EnterChat);
+
+        SoundManager.Instance.PlayBGM("RoomBgm");
 
         // 처음 들어왔을때 첫 자리 잡기 위해 확인
         foreach (Player a_RefPlayer in PhotonNetwork.PlayerList)
@@ -316,6 +320,8 @@ public class RoomMgr : MonoBehaviourPunCallbacks
 
     public void OnClickExitRoom()
     {
+        SoundManager.Instance.PlayUISound("Button");
+
         IsExit = true;
         string msg = string.Format("{0}_<color=#ff0000>[ {1} ] 나갔습니다.</color>", (int)ChatType.All, PhotonNetwork.LocalPlayer.NickName);
         pv.RPC("ChatLogMsg", RpcTarget.All, msg, 0);
@@ -356,6 +362,8 @@ public class RoomMgr : MonoBehaviourPunCallbacks
         if (string.IsNullOrEmpty(InputChatIF.text))
             return;
 
+        SoundManager.Instance.PlayUISound("Button");
+
         int Type = (int)ChatType.All;
         if (ChatTypeDrop.value == 1)
             Type = (int)m_TeamInfoProps["MyTeam"];
@@ -367,6 +375,7 @@ public class RoomMgr : MonoBehaviourPunCallbacks
 
     private void PlayerSettingBtn_Click()
     {
+        SoundManager.Instance.PlayUISound("Button");
         m_PlayerSettingPanel.GetComponentInChildren<PlayerSettingCtrl>().IsShow = true;
     }
 }

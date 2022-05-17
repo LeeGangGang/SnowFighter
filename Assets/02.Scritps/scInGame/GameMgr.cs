@@ -69,7 +69,7 @@ public class GameMgr : MonoBehaviourPunCallbacks, IPunObservable
             if (GlobalValue.skillSet[i] == -1)
                 continue;
 
-            SkillType type = (SkillType)GlobalValue.skillSet[i];
+            SkillData.SkillType type = (SkillData.SkillType)GlobalValue.skillSet[i];
             GameObject a_SkillBtnPrefab = Resources.Load<GameObject>(string.Format("SkillBtnPrefabs/{0}Btn", type.ToString()));
             GameObject a_SkillBtn = Instantiate(a_SkillBtnPrefab, m_ArrSkillSlot[i]);
             a_SkillBtn.name = string.Format("{0}Btn", type.ToString());
@@ -88,6 +88,12 @@ public class GameMgr : MonoBehaviourPunCallbacks, IPunObservable
 
         if (!ReferenceEquals(m_ExitBtn, null))
             m_ExitBtn.onClick.AddListener(ExitBtn_Click);
+
+        // Photon 딜레이 때문인지 여기서 초기화
+        m_GameState = GameState.GS_Ready;
+        m_GameEndPanel.SetActive(false);
+
+        SoundManager.Instance.PlayBGM("InGameBgm");
     }
 
     // Update is called once per frame
@@ -154,6 +160,12 @@ public class GameMgr : MonoBehaviourPunCallbacks, IPunObservable
         if (PhotonNetwork.IsMasterClient == false)
             m_ExitBtn.gameObject.SetActive(false);
 
+        int BgmIdx = Random.Range(0, 3);
+        if (!Camera.main.GetComponent<CameraCtrl>().Player.GetComponent<PlayerCtrl>().IsMyTeam(m_WinTeam))
+            SoundManager.Instance.PlayBGM("Lose/Lose_" + BgmIdx.ToString(), false);
+        else
+            SoundManager.Instance.PlayBGM("Win/Win_" + BgmIdx.ToString(), false);
+
         if (m_WinTeam == -1)
             m_GameEndInfoTxt.text = "무승부";
         else if (m_WinTeam == 0)
@@ -164,6 +176,8 @@ public class GameMgr : MonoBehaviourPunCallbacks, IPunObservable
 
     void ExitBtn_Click()
     {
+        SoundManager.Instance.PlayUISound("Button");
+
         StartCoroutine(LoadRoomScene());
     }
 
@@ -175,6 +189,8 @@ public class GameMgr : MonoBehaviourPunCallbacks, IPunObservable
 
     public void ConfigBtn_Click()
     {
+        SoundManager.Instance.PlayUISound("Button");
+
         if (m_Config_Pop == null)
             m_Config_Pop = Resources.Load("Prefabs/ConfigPanel") as GameObject;
 
@@ -204,6 +220,9 @@ public class GameMgr : MonoBehaviourPunCallbacks, IPunObservable
     {
         // 나가는 타이밍에 포톤 정보들이 한 프레임 먼저 사라지고 LoadScene()이 한 프레임 늦게 호출되는 문제 해결법
         if (PhotonNetwork.CurrentRoom == null || PhotonNetwork.LocalPlayer == null)
+            return false;
+
+        if (m_GameState == GameState.Gs_GameExit)
             return false;
 
         m_GameState = ReceiveGState();

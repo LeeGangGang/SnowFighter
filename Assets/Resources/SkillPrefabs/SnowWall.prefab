@@ -49,6 +49,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_HpBarImg: {fileID: 1506900663051514444}
+  m_DamageTxtPrefab: {fileID: 1562404881860160864, guid: c656d59a213806f4c8cad044c71d7884, type: 3}
+  m_DamageCanvas: {fileID: 3240198838933189927}
 --- !u!65 &3445694883012864685
 BoxCollider:
   m_ObjectHideFlags: 0

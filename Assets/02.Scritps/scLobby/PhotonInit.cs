@@ -71,11 +71,6 @@ public class PhotonInit : MonoBehaviourPunCallbacks
             m_PlayerSettingBtn.onClick.AddListener(PlayerSettingBtn_Click);
     }
 
-    void Update()
-    {
-        //PlayerSettingMoveCtrl();
-    }
-
     //2번, ConnectUsingSettings() 함수 호출에 대한 서버 접속이 성공하면 호출되는 콜백 함수
     //PhotonNetwork.LeaveRoom(); 으로 방을 떠날 때도 로비로 나오면서 이 함수가 자동으로 호출된다.
     public override void OnConnectedToMaster()
@@ -136,7 +131,6 @@ public class PhotonInit : MonoBehaviourPunCallbacks
 
         //로컬 플레이어의 이름을 설정
         PhotonNetwork.LocalPlayer.NickName = m_PlayerName_Txt.text;
-        //5번 무작위로 추출된 방으로 입장
         PhotonNetwork.JoinRandomRoom();
     }
 
@@ -257,6 +251,8 @@ public class PhotonInit : MonoBehaviourPunCallbacks
 
     private void PlayerSettingBtn_Click()
     {
+        SoundManager.Instance.PlayUISound("Button");
+
         m_PlayerSettingPanel.GetComponentInChildren<PlayerSettingCtrl>().IsShow = true;
     }
 }

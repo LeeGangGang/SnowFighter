@@ -49,7 +49,8 @@ public class SnowBowlingBtnCtrl : MonoBehaviour
 
         CoolTime_Update();
 
-        if (m_PlayerCtrl.m_CurStatus == PlayerState.Die)
+        if (m_PlayerCtrl.m_CurStatus == PlayerState.Die ||
+            m_PlayerCtrl.m_CurStatus == PlayerState.Catapult)
             return;
 
         if (m_ThisBtn.enabled) // ƒ≈∏¿”¡ﬂ¿Ã æ∆¥“∂ß
@@ -95,7 +96,8 @@ public class SnowBowlingBtnCtrl : MonoBehaviour
         if (m_PlayerCtrl == null)
             return;
 
-        if (m_PlayerCtrl.m_CurStatus == PlayerState.Die)
+        if (m_PlayerCtrl.m_CurStatus == PlayerState.Die ||
+            m_PlayerCtrl.m_CurStatus == PlayerState.Catapult)
             return;
 
         if (m_PlayerCtrl.m_CurSnowCnt <= 0)
@@ -109,10 +111,11 @@ public class SnowBowlingBtnCtrl : MonoBehaviour
 
     void OnPointerUp(PointerEventData pointerEventData)
     {
-        if(m_PlayerCtrl == null || m_SkillCtrl == null || m_PlayerTr == null)
+        if (m_PlayerCtrl == null || m_SkillCtrl == null || m_PlayerTr == null)
             return;
 
-        if (m_PlayerCtrl.m_CurStatus == PlayerState.Die)
+        if (m_PlayerCtrl.m_CurStatus == PlayerState.Die ||
+            m_PlayerCtrl.m_CurStatus == PlayerState.Catapult)
             return;
 
         if (m_CurCoolTime > 0f)
@@ -144,16 +147,12 @@ public class SnowBowlingBtnCtrl : MonoBehaviour
         {
             m_CurCoolTime -= Time.deltaTime;
             m_SkillCoolImg.fillAmount = m_CurCoolTime / m_CoolTime;
-            //Cool_Label.text = ((int)Cool_float).ToString();
-
             m_ThisBtn.enabled = false;
         }
         else
         {
             m_CurCoolTime = 0.0f;
             m_SkillCoolImg.fillAmount = 0.0f;
-            //Cool_Label.text = "";
-
             m_ThisBtn.enabled = true;
         }
     }

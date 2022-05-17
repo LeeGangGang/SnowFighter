@@ -1,0 +1,2 @@
+D:\포트폴리오\SnowFighter\obj\Debug\PhotonUnityNetworking.Utilities.csproj.AssemblyReference.cache
+D:\포트폴리오\SnowFighter\obj\Debug\PhotonUnityNetworking.Utilities.csproj.CoreCompileInputs.cache

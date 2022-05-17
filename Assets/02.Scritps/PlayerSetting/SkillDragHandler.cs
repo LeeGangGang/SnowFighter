@@ -4,9 +4,9 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class SkillDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
+public class SkillDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerEnterHandler, IPointerExitHandler
 {
-    public SkillType Type;
+    public SkillData.SkillType Type;
 
     // Drag는 하나만 가능하여 static으로 관리
     public static Transform StartParent;    // 드래그 한 Skill의 드래그 시점 위치
@@ -16,10 +16,14 @@ public class SkillDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, 
     private Rect RectSR;
     private GameObject Canvas;
 
+    private Text InfoTxt;
+    private Text ExplainTxt;
+
     bool IsMvItem = false; // true : 다른 곳으로 해당 Skill을 드래그 할때
 
     public void OnBeginDrag(PointerEventData eventData)
     {
+        SetRectSR();
         ParentSR.OnBeginDrag(eventData);
     }
 
@@ -41,7 +45,7 @@ public class SkillDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 
         if (IsMvItem)
             this.transform.position = eventData.position;
-        // ScrollView도 같이 동작시키기 위해사
+        // ScrollView도 같이 동작시키기 위해서
         ParentSR.OnDrag(eventData);
     }
 
@@ -65,8 +69,26 @@ public class SkillDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, 
     {
         Canvas = GameObject.Find("Canvas");
         ParentSR = GameObject.Find("SkillSvObj").GetComponent<ScrollRect>();
+        InfoTxt = GameObject.Find("InfoTxt").GetComponent<Text>();
+        ExplainTxt = GameObject.Find("ExpainTxt").GetComponent<Text>();
+    }
+
+    public void SetRectSR()
+    {
         Vector2 Size = ParentSR.GetComponent<RectTransform>().sizeDelta;
-        Vector2 LTPos = new Vector2(990f - Size.x / 2f, ParentSR.transform.position.y - Size.y / 2f);
+        Vector2 LTPos = new Vector2(ParentSR.transform.position.x - Size.x / 2f, ParentSR.transform.position.y - Size.y / 2f);
         RectSR = new Rect(LTPos, Size);
+    }
+
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        InfoTxt.text = SkillData.InfoTxt(Type);
+        ExplainTxt.text = SkillData.ExplainTxt(Type);
+    }
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        InfoTxt.text = string.Empty;
+        ExplainTxt.text = string.Empty;
     }
 }

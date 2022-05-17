@@ -10,6 +10,8 @@ TagManager:
   - SnowBowling
   - MapObj
   - Bullet
+  - CatapultSnow
+  - SnowMan
   layers:
   - Default
   - TransparentFX
@@ -22,7 +24,7 @@ TagManager:
   - SnowBowling
   - SnowMan
   - MapObj
-  - 
+  - CatapultSnow
   - 
   - 
   - 

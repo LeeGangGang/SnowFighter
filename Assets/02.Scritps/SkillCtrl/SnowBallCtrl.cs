@@ -38,13 +38,16 @@ public class SnowBallCtrl : MonoBehaviour, IDamage
         if (!ReferenceEquals(_rigidbody, null))
             _rigidbody.velocity = Vector3.zero;
 
+        float Volume = SoundManager.Instance.GetDistVolume(this.transform.position);
+        SoundManager.Instance.PlayEffSound("Hit", Volume);
+
         Destroy(this.gameObject, 0.0f);
     }
 
     void OnTriggerEnter(Collider other)
     {
-        if (!other.gameObject.name.Contains("Player") && 
-            !other.gameObject.name.Contains("SnowMan"))
+        if (!other.CompareTag("Player") && 
+            !other.CompareTag("SnowMan"))
             DestroyThisObj();
     }
 

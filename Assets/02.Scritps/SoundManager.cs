@@ -16,7 +16,7 @@ public class SoundManager : MonoBehaviour
     [HideInInspector] public bool soundOnOff = true;
 
     //효과음 버퍼
-    int effSdCount = 5; //최대 5번 플레이
+    int effSdCount = 10; //최대 10번 플레이
     int iSdCount = 0;
     List<GameObject> sdObjList = new List<GameObject>();
 
@@ -85,7 +85,7 @@ public class SoundManager : MonoBehaviour
         }
     }
 
-    public void PlayBGM(string fileName)
+    public void PlayBGM(string fileName, bool loop = true)
     {
         if (!soundOnOff)
             return;
@@ -100,7 +100,7 @@ public class SoundManager : MonoBehaviour
             return;
 
         audioSrc.clip = audioClipList[fileName];
-        audioSrc.loop = true;
+        audioSrc.loop = loop;
         audioSrc.Play();
     }
 

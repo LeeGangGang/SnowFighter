@@ -9,6 +9,7 @@ public enum PlayerState
     Idle,
     HoldAction,
     Bowling,
+    Catapult,
     Die
 }
 
@@ -57,6 +58,9 @@ public class PlayerCtrl : MonoBehaviourPunCallbacks, IPunObservable
     // 위치 정보를 송수신할 때 사용할 변수 선언 및 초깃값 설정
     private Vector3 m_CurPos = Vector3.zero;
     private Quaternion m_CurRot = Quaternion.identity;
+
+    public GameObject m_DamageTxtPrefab;
+    public Transform m_DamageCanvas;
 
     // PhotonView 컴포넌트를 할당할 변수
     [HideInInspector] public PhotonView pv = null;
@@ -108,7 +112,7 @@ public class PlayerCtrl : MonoBehaviourPunCallbacks, IPunObservable
     private void OnTriggerEnter(Collider other)
     {
         Debug.Log("Hit : " + other.gameObject.name);
-        if (other.gameObject.name.Contains("SnowBall") || other.gameObject.name.Contains("SnowBowling"))
+        if (other.CompareTag("SnowBall") || other.CompareTag("SnowBowling"))
         {
             IDamage IDmg = other.gameObject.GetComponent<IDamage>();
             if (!ReferenceEquals(IDmg, null))
@@ -168,13 +172,15 @@ public class PlayerCtrl : MonoBehaviourPunCallbacks, IPunObservable
 
     public void GetDamage(float a_Dmg, int a_AttackerId)
     {
-        if (pv.IsMine == false)
-            return;
-
         if (m_PlayerId == a_AttackerId)
             return;
 
         if (m_CurHp <= 0f)
+            return;
+
+        SpawnDamageTxt(a_Dmg);
+
+        if (pv.IsMine == false)
             return;
 
         m_CurHp -= a_Dmg;
@@ -192,6 +198,18 @@ public class PlayerCtrl : MonoBehaviourPunCallbacks, IPunObservable
         else
         {
             MySetAnim(AnimState.Hit);
+        }
+    }
+
+    public void SpawnDamageTxt(float dmg)
+    {
+        if (m_DamageTxtPrefab != null && m_DamageCanvas != null)
+        {
+            GameObject m_DamageObj = (GameObject)Instantiate(m_DamageTxtPrefab);
+            m_DamageObj.transform.SetParent(m_DamageCanvas, false);
+            m_DamageObj.transform.localPosition = new Vector3(0f, 0.85f, 0f);
+            DamageTxtCtrl a_DamageTx = m_DamageObj.GetComponentInChildren<DamageTxtCtrl>();
+            a_DamageTx.m_DamageVal = (int)dmg;
         }
     }
 
@@ -291,6 +309,19 @@ public class PlayerCtrl : MonoBehaviourPunCallbacks, IPunObservable
                 controller.SimpleMove(tr.rotation * Vector3.forward * m_BowMvSpeed * 3f * Time.deltaTime);
 
             MySetAnim(AnimState.Run);
+        }
+        if (m_CurStatus == PlayerState.Catapult)
+        {
+            if (moveDir != Vector3.zero)
+            {
+                Transform a_ProjectorTr = this.GetComponent<PlayerSkillCtrl>().m_Projector.transform;
+                a_ProjectorTr.Translate(moveDir * Time.deltaTime * 10f);
+
+                Quaternion a_Rot = Quaternion.LookRotation(a_ProjectorTr.position);
+                a_Rot.x = 0f;
+                a_Rot.z = 0f;
+                tr.transform.rotation = a_Rot;
+            }
         }
         else
         {

@@ -25,12 +25,6 @@ public class PlayerAnimEvent : MonoBehaviour
         SoundManager.Instance.PlayEffSound(string.Format($"RunR_{Idx}"), Volume);
     }
 
-    void Event_HitAnim()
-    {
-        float Volume = SoundManager.Instance.GetDistVolume(m_PlayerCtrl.tr.position);
-        SoundManager.Instance.PlayEffSound("Hit", Volume);
-    }
-
     void Event_StartAnim()
     {
         if (m_PlayerCtrl.pv.IsMine == false)

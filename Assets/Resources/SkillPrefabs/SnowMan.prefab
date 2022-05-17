@@ -264,7 +264,7 @@ GameObject:
   - component: {fileID: 6781727795282497036}
   m_Layer: 9
   m_Name: SnowMan
-  m_TagString: Untagged
+  m_TagString: SnowMan
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -305,6 +305,8 @@ MonoBehaviour:
   m_NetHp: 200
   m_SnowBallPrefab: {fileID: 245866406054031344, guid: 2b5c2a1be793df643be6989f957390ec, type: 3}
   m_TraceRangeObj: {fileID: 6781727795548070428}
+  m_DamageTxtPrefab: {fileID: 1562404881860160864, guid: c656d59a213806f4c8cad044c71d7884, type: 3}
+  m_DamageCanvas: {fileID: 6781727796706057960}
 --- !u!136 &6781727795282497033
 CapsuleCollider:
   m_ObjectHideFlags: 0

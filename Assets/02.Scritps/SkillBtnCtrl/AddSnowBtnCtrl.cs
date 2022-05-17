@@ -47,7 +47,8 @@ public class AddSnowBtnCtrl : MonoBehaviour
 
         CoolTime_Update();
 
-        if (m_PlayerCtrl.m_CurStatus == PlayerState.Die)
+        if (m_PlayerCtrl.m_CurStatus == PlayerState.Die || 
+            m_PlayerCtrl.m_CurStatus == PlayerState.Catapult)
             return;
 
         if (m_ThisBtn.enabled) // ƒ≈∏¿”¡ﬂ¿Ã æ∆¥“∂ß
@@ -85,7 +86,8 @@ public class AddSnowBtnCtrl : MonoBehaviour
         if (m_PlayerCtrl == null)
             return;
 
-        if (m_PlayerCtrl.m_CurStatus == PlayerState.Die)
+        if (m_PlayerCtrl.m_CurStatus == PlayerState.Die ||
+            m_PlayerCtrl.m_CurStatus == PlayerState.Catapult)
             return;
 
         int a_MaxSnowCnt = m_PlayerCtrl.m_MaxSnowCnt;
@@ -101,7 +103,8 @@ public class AddSnowBtnCtrl : MonoBehaviour
         if (m_PlayerCtrl == null)
             return;
 
-        if (m_PlayerCtrl.m_CurStatus == PlayerState.Die)
+        if (m_PlayerCtrl.m_CurStatus == PlayerState.Die ||
+            m_PlayerCtrl.m_CurStatus == PlayerState.Catapult)
             return;
 
         EndAddSnow();
@@ -121,17 +124,13 @@ public class AddSnowBtnCtrl : MonoBehaviour
         if (0.0f < m_CurCoolTime)
         {
             m_CurCoolTime -= Time.deltaTime;
-            m_SkillCoolImg.fillAmount = m_CurCoolTime / m_CoolTime;
-            //Cool_Label.text = ((int)Cool_float).ToString();
-            
+            m_SkillCoolImg.fillAmount = m_CurCoolTime / m_CoolTime;            
             m_ThisBtn.enabled = false;
         }
         else
         {
             m_CurCoolTime = 0.0f;
             m_SkillCoolImg.fillAmount = 0.0f;
-            //Cool_Label.text = "";
-            
             m_ThisBtn.enabled = true;
         }
     }

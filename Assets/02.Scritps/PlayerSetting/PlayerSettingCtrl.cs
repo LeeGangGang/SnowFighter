@@ -6,13 +6,6 @@ using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
 
-public enum SkillType
-{
-    SnowWall = 0,
-    SnowBowling,
-    SpawnSnowMan,
-}
-
 public class PlayerSettingCtrl : MonoBehaviour
 {
     public GameObject Skill_Item; // Prefab
@@ -36,7 +29,7 @@ public class PlayerSettingCtrl : MonoBehaviour
     {
         m_SelectSkill = StrToArr(GlobalValue.StrskillSet);
 
-        foreach (SkillType type in Enum.GetValues(typeof(SkillType)))
+        foreach (SkillData.SkillType type in Enum.GetValues(typeof(SkillData.SkillType)))
         {
             GameObject a_Itme = Instantiate(Skill_Item);
             Texture a_Img = (Texture)Resources.Load("Skill_Img/" + type.ToString());
@@ -71,6 +64,8 @@ public class PlayerSettingCtrl : MonoBehaviour
 
     void SaveBtn_Click()
     {
+        SoundManager.Instance.PlayUISound("Button");
+
         m_SelectSkill[0] = Slot[0].childCount == 0 ? -1 : (int)Slot[0].GetComponentInChildren<SkillDragHandler>().Type;
         m_SelectSkill[1] = Slot[1].childCount == 0 ? -1 : (int)Slot[1].GetComponentInChildren<SkillDragHandler>().Type;
         
@@ -79,11 +74,15 @@ public class PlayerSettingCtrl : MonoBehaviour
 
     void ShowBtn_Click()
     {
+        SoundManager.Instance.PlayUISound("Button");
+
         IsShow = true;
     }
 
     void HideBtn_Click()
     {
+        SoundManager.Instance.PlayUISound("Button");
+
         IsShow = false;
     }
 

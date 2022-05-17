@@ -58,6 +58,9 @@ public class SnowManCtrl : MonoBehaviour, IPunObservable, IDamage
     public GameObject m_SnowBallPrefab;
     public GameObject m_TraceRangeObj;
 
+    public GameObject m_DamageTxtPrefab;
+    public Transform m_DamageCanvas;
+
     private PhotonView pv = null;
 
     void Awake()
@@ -113,7 +116,7 @@ public class SnowManCtrl : MonoBehaviour, IPunObservable, IDamage
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.name.Contains("SnowBall") || other.gameObject.name.Contains("SnowBowling"))
+        if (other.CompareTag("SnowBall") || other.CompareTag("SnowBowling"))
         {
             IDamage IDmg = other.gameObject.GetComponent<IDamage>();
             if (!ReferenceEquals(IDmg, null))
@@ -330,13 +333,27 @@ public class SnowManCtrl : MonoBehaviour, IPunObservable, IDamage
 
     public void GetDamage(float a_Dmg, int a_AttackerId)
     {
+        SpawnDamageTxt(a_Dmg);
         m_SnowData.m_CurHp -= a_Dmg;
         UpdateUI_CurHpBar();
         if (m_SnowData.m_CurHp <= 0.0f)
             DestroyThisObj();
     }
+
     public SnowData GetData()
     {
         return SnowData;
+    }
+
+    public void SpawnDamageTxt(float dmg)
+    {
+        if (m_DamageTxtPrefab != null && m_DamageCanvas != null)
+        {
+            GameObject m_DamageObj = (GameObject)Instantiate(m_DamageTxtPrefab);
+            m_DamageObj.transform.SetParent(m_DamageCanvas, false);
+            m_DamageObj.transform.localPosition = new Vector3(0f, 0.85f, 0f);
+            DamageTxtCtrl a_DamageTx = m_DamageObj.GetComponentInChildren<DamageTxtCtrl>();
+            a_DamageTx.m_DamageVal = (int)dmg;
+        }
     }
 }

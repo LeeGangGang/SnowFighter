@@ -12,6 +12,9 @@ public class PlayerSkillCtrl : MonoBehaviour
     public GameObject m_SnowWallPrefab;
     public GameObject m_SnowBowlingPrefab;
 
+    public GameObject m_CatapultPrefab;
+    public GameObject m_CatapultAttProjectorPrefab;
+
     void Awake()
     {
         //PhotonView 컴포넌트 할당
@@ -108,6 +111,73 @@ public class PlayerSkillCtrl : MonoBehaviour
         a_SnowMan.GetComponent<SnowManCtrl>().SnowData.AttackerId = pv.Owner.ActorNumber;
         if (pv.Owner.CustomProperties.ContainsKey("MyTeam") == true)
             a_SnowMan.GetComponent<SnowManCtrl>().SnowData.AttackerTeam = (int)pv.Owner.CustomProperties["MyTeam"];
+    }
+    #endregion
+
+    #region --- 투석기 설치
+    [HideInInspector] public GameObject m_Catapult;
+    [HideInInspector] public GameObject m_Projector;
+    public void CreateCatapult()
+    {
+        if (m_CatapultPrefab == null)
+            return;
+
+        CreateCatapultRPC();
+        pv.RPC("CreateCatapultRPC", RpcTarget.Others);
+    }
+
+    [PunRPC]
+    void CreateCatapultRPC()
+    {
+        m_Catapult = GameObject.Instantiate(m_CatapultPrefab, this.transform);
+        m_Catapult.GetComponentInChildren<CatapultSnowBallCtrl>().SnowData.AttackerId = pv.Owner.ActorNumber;
+        if (pv.Owner.CustomProperties.ContainsKey("MyTeam") == true)
+            m_Catapult.GetComponentInChildren<CatapultSnowBallCtrl>().SnowData.AttackerTeam = (int)pv.Owner.CustomProperties["MyTeam"];
+
+        if (pv.IsMine)
+        {
+            Vector3 a_AttProPos = m_Catapult.transform.position;
+            a_AttProPos.y = 5f;
+            m_Projector = PhotonNetwork.Instantiate("SkillPrefabs/AttProjector", a_AttProPos, Quaternion.identity);
+        }
+    }
+
+    public void DestoryCatapult()
+    {
+        if (m_Catapult == null)
+            return;
+
+        DestoryCatapultRPC();
+        pv.RPC("DestoryCatapultRPC", RpcTarget.Others);
+    }
+
+    [PunRPC]
+    void DestoryCatapultRPC()
+    {
+        Destroy(m_Catapult);
+    }
+
+    public void CatapultShot(Vector3 a_Pos)
+    {
+        if (m_Catapult == null)
+            return;
+
+        CatapultShotRPC(a_Pos);
+        pv.RPC("CatapultShotRPC", RpcTarget.Others, a_Pos);
+    }
+
+    [PunRPC]
+    void CatapultShotRPC(Vector3 a_Pos)
+    {
+        m_Catapult.GetComponent<CatapultCtrl>().Shot(a_Pos);
+    }
+
+    public void DestoryAttProjector()
+    {
+        if (m_Projector == null)
+            return;
+
+        PhotonNetwork.Destroy(m_Projector);
     }
     #endregion
 }
