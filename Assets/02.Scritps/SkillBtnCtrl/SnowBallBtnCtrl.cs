@@ -59,8 +59,7 @@ public class SnowBallBtnCtrl : MonoBehaviour
         m_SkillCtrl.Shot(SnowPos, SnowRot);
 
         m_CurCoolTime = m_CoolTime;
-        int a_SnowCnt = m_PlayerCtrl.m_CurSnowCnt--;
-        m_PlayerCtrl.SendSnowCnt(a_SnowCnt);
+        m_PlayerCtrl.m_CurSnowCnt--;
     }
 
     void CoolTime_Update()

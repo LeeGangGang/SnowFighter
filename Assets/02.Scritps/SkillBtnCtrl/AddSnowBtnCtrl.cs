@@ -73,9 +73,7 @@ public class AddSnowBtnCtrl : MonoBehaviour
                     m_CurCastTime = 0.0f;
                     m_CurCoolTime = m_CoolTime;
                     GameMgr.Inst.CastingBar(false);
-
-                    int a_SnowCnt = m_PlayerCtrl.m_CurSnowCnt++;
-                    m_PlayerCtrl.SendSnowCnt(a_SnowCnt);
+                    m_PlayerCtrl.m_CurSnowCnt++;
                 }
             }
         }

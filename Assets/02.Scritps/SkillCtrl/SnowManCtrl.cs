@@ -92,12 +92,24 @@ public class SnowManCtrl : MonoBehaviour, IPunObservable, IDamage
 
         m_CurState = SnowManState.Idle;
 
+        MasterInfo();
+
         if (pv.IsMine)
         {
             GameObject[] Players = GameObject.FindGameObjectsWithTag("Player");
             if (Players.Length > 0)
                 m_EnemyPlayers = Players.Where(player => player.GetComponent<PlayerCtrl>().IsMyTeam(m_SnowData.AttackerTeam) == false).ToArray();
         }
+    }
+
+    void MasterInfo()
+    {
+        if (pv == null || pv.Owner == null)
+            return;
+
+        if (pv.Owner.CustomProperties.ContainsKey("MyTeam") == true)
+            SnowData.AttackerTeam = (int)pv.Owner.CustomProperties["MyTeam"];        
+        SnowData.AttackerId = (int)pv.Owner.ActorNumber;
     }
 
     // Update is called once per frame

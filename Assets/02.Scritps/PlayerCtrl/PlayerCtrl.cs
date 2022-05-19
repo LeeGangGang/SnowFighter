@@ -51,7 +51,6 @@ public class PlayerCtrl : MonoBehaviourPunCallbacks, IPunObservable
     [HideInInspector] public float m_MaxHp = 200.0f;
     [HideInInspector] public float m_NetHp = 200.0f;
 
-    ExitGames.Client.Photon.Hashtable SnowCntProps = new ExitGames.Client.Photon.Hashtable();
     [HideInInspector] public int m_CurSnowCnt = 10; // ÇöÀç °¡Áö°í ÀÖ´Â ´«µ¢ÀÌ °¹¼ö
     [HideInInspector] public int m_MaxSnowCnt = 10; // ÃÖ´ë °¡Áú¼ö ÀÖ´Â ´«µ¢ÀÌ °¹¼ö
 
@@ -105,7 +104,6 @@ public class PlayerCtrl : MonoBehaviourPunCallbacks, IPunObservable
             NetworkTransform_Update();
             NetworkCurHp_Update();
             NetworkAnimState_Update();
-            NetworkSnowCnt_Update();
         }
     }
 
@@ -148,21 +146,12 @@ public class PlayerCtrl : MonoBehaviourPunCallbacks, IPunObservable
                 m_NickName.text = "BlueÆÀ : " + m_PlayerId.ToString();
                 m_NickName.color = Color.blue;
             }
-
-            if (pv.IsMine == true)
-            {
-                SnowCntProps.Clear();
-                SnowCntProps.Add("SnowCnt", 0);
-                pv.Owner.SetCustomProperties(SnowCntProps);
-            }
         }
     }
 
     public bool IsMyTeam(int a_Team)
     {
         bool IsMyTeam = false;
-        if (pv.IsMine == false)
-            return IsMyTeam;
 
         if (a_Team == m_MyTeam)
             IsMyTeam = true;
@@ -205,6 +194,7 @@ public class PlayerCtrl : MonoBehaviourPunCallbacks, IPunObservable
     {
         if (m_DamageTxtPrefab != null && m_DamageCanvas != null)
         {
+            //DamageRoot
             GameObject m_DamageObj = (GameObject)Instantiate(m_DamageTxtPrefab);
             m_DamageObj.transform.SetParent(m_DamageCanvas, false);
             m_DamageObj.transform.localPosition = new Vector3(0f, 0.85f, 0f);
@@ -400,40 +390,4 @@ public class PlayerCtrl : MonoBehaviourPunCallbacks, IPunObservable
                 m_CurStatus = PlayerState.Die;
         }
     }
-
-    #region --- CustomProperties SnowCnt ÃÊ±âÈ­
-    public void SendSnowCnt(int a_CurSnowCnt = 0)
-    {
-        if (pv == null || pv.IsMine == false)
-            return;
-
-        if (SnowCntProps == null)
-        {
-            SnowCntProps = new ExitGames.Client.Photon.Hashtable();
-            SnowCntProps.Clear();
-        }
-
-        if (SnowCntProps.ContainsKey("SnowCnt") == true)
-            SnowCntProps["SnowCnt"] = a_CurSnowCnt;
-        else
-            SnowCntProps.Add("SnowCnt", a_CurSnowCnt);
-
-        pv.Owner.SetCustomProperties(SnowCntProps);
-    }
-
-    void NetworkSnowCnt_Update()
-    {
-        if (pv == null || pv.Owner == null)
-            return;
-
-        if (pv.Owner.CustomProperties.ContainsKey("SnowCnt") == true)
-        {
-            int a_CurSnowCnt = (int)pv.Owner.CustomProperties["SnowCnt"];
-            if (m_CurSnowCnt != a_CurSnowCnt)
-            {
-                m_CurSnowCnt = a_CurSnowCnt;
-            }
-        }
-    }
-    #endregion
 }

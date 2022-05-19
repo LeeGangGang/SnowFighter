@@ -92,6 +92,7 @@
     <Compile Include="Assets\02.Scritps\scInGame\DamageTxtCtrl.cs" />
     <Compile Include="Assets\Photon\PhotonChat\Demos\Common\EventSystemSpawner.cs" />
     <Compile Include="Assets\02.Scritps\scInGame\IndividualGameMgr.cs" />
+    <Compile Include="Assets\02.Scritps\PlayerSetting\SkillData.cs" />
     <Compile Include="Assets\02.Scritps\scLobby\RoomData.cs" />
     <Compile Include="Assets\Photon\PhotonChat\Demos\DemoChat\FriendItem.cs" />
     <Compile Include="Assets\02.Scritps\PlayerSetting\SkillSlotCtrl.cs" />
@@ -111,7 +112,6 @@
     <Compile Include="Assets\02.Scritps\scInGame\JoyStickCtrl.cs" />
     <Compile Include="Assets\02.Scritps\scLobby\CreateRoomMgr.cs" />
     <Compile Include="Assets\04.Models\AurynSky\WinterArena\Scripts\ChestDemo.cs" />
-    <Compile Include="Assets\02.Scritps\PlayerSetting\SkillData.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Photon\PhotonLibs\netstandard2.0\Photon3Unity3D.xml" />

@@ -108,9 +108,6 @@ public class PlayerSkillCtrl : MonoBehaviour
     public void CreateSnowMan(Vector3 a_Pos, Quaternion a_Rot)
     {
         GameObject a_SnowMan = PhotonNetwork.Instantiate("SkillPrefabs/SnowMan", a_Pos, a_Rot, 0);
-        a_SnowMan.GetComponent<SnowManCtrl>().SnowData.AttackerId = pv.Owner.ActorNumber;
-        if (pv.Owner.CustomProperties.ContainsKey("MyTeam") == true)
-            a_SnowMan.GetComponent<SnowManCtrl>().SnowData.AttackerTeam = (int)pv.Owner.CustomProperties["MyTeam"];
     }
     #endregion
 

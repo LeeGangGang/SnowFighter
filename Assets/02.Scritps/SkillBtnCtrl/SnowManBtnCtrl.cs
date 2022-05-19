@@ -80,7 +80,7 @@ public class SnowManBtnCtrl : MonoBehaviour
                     Quaternion SnowManRot = m_PlayerTr.rotation;
 
                     m_SkillCtrl.CreateSnowMan(SnowManPos, SnowManRot);
-                    m_PlayerCtrl.SendSnowCnt(m_PlayerCtrl.m_CurSnowCnt - 2);
+                    m_PlayerCtrl.m_CurSnowCnt -= 2;
                 }
             }
         }

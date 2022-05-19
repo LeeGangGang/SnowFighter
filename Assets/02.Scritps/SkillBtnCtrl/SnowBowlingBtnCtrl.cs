@@ -75,7 +75,7 @@ public class SnowBowlingBtnCtrl : MonoBehaviour
                         Vector3 BallPos = m_PlayerTr.position + (m_PlayerTr.forward * 2.0f);
                         Quaternion BallRot = m_PlayerTr.rotation;
                         m_SkillCtrl.CreateSnowBowling(BallPos, BallRot);
-                        m_PlayerCtrl.SendSnowCnt(m_PlayerCtrl.m_CurSnowCnt--);
+                        m_PlayerCtrl.m_CurSnowCnt--;
                     }
 
                     m_PlayerCtrl.m_BowMvSpeed += Time.deltaTime * 30.0f;

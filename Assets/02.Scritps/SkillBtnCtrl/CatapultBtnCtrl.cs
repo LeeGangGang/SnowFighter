@@ -83,8 +83,7 @@ public class CatapultBtnCtrl : MonoBehaviour
         m_SkillCtrl.DestoryAttProjector();
 
         m_CurCoolTime = m_CoolTime;
-        int a_SnowCnt = m_PlayerCtrl.m_CurSnowCnt - 2;
-        m_PlayerCtrl.SendSnowCnt(a_SnowCnt);
+        m_PlayerCtrl.m_CurSnowCnt -= 2;
     }
 
     void CoolTime_Update()

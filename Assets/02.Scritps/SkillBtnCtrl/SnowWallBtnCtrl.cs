@@ -80,7 +80,7 @@ public class SnowWallBtnCtrl : MonoBehaviour
                     Quaternion WallRot = m_PlayerTr.rotation;
 
                     m_SkillCtrl.CreateSnowWall(WallPos, WallRot);
-                    m_PlayerCtrl.SendSnowCnt( m_PlayerCtrl.m_CurSnowCnt-- );
+                    m_PlayerCtrl.m_CurSnowCnt--;
                 }
             }
         }
