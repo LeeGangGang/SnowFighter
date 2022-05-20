@@ -27,13 +27,14 @@ public class RoomMgr : MonoBehaviourPunCallbacks
     [Header("PlayerSetting UI")]
     public Button PlayerSettingShowBtn;
     private GameObject m_PlayerSettingPanel;
-    bool IsShow = false;
-    float MvSpeed_PS = 2000f;
-    Vector3 ShowPos_PS = new Vector3(420f, 0f, 0f);
+
+    [Header("RoomInfo UI")]
+    public Text RoomNameTxt;
+    public Text PlayerCntTxt;
 
     // 팀 관련 변수
     private bool[] InPlayer = new bool[8]; // 0 ~ 3 : Red팀, 4 ~ 7 : Blue팀
-    ExitGames.Client.Photon.Hashtable m_TeamInfoProps = new ExitGames.Client.Photon.Hashtable();
+    ExitGames.Client.Photon.Hashtable m_PlayerInfoProps = new ExitGames.Client.Photon.Hashtable(); // 팀, 레디 상태 저장
     [Header("Red Team Select UI")]
     public Button[] RedTeamBtn = new Button[4];
     [Header("Blue Team Select UI")]
@@ -41,7 +42,6 @@ public class RoomMgr : MonoBehaviourPunCallbacks
 
     // 버튼 관련
     [HideInInspector] bool IsReady = false;
-    ExitGames.Client.Photon.Hashtable m_PlayerReady = new ExitGames.Client.Photon.Hashtable();
     [Header("Button UI")]
     public Button ReadyBtn;
     public Button StartBtn;
@@ -50,11 +50,17 @@ public class RoomMgr : MonoBehaviourPunCallbacks
 
     void Awake()
     {
-        PhotonNetwork.AutomaticallySyncScene = true;
+        Time.timeScale = 1f;
         //PhotonView 컴포넌트 할당
         pv = GetComponent<PhotonView>();
         m_PlayerSettingPanel = Instantiate(Resources.Load("PlayerSetting") as GameObject, GameObject.Find("Canvas").transform);
         m_PlayerSettingPanel.transform.localPosition = new Vector3(395f, 0f, 0f);
+
+        RoomNameTxt.text = PhotonNetwork.CurrentRoom.Name.Split('_')[1];
+
+        IsReady = false;
+        SendReady();
+        PhotonNetwork.AutomaticallySyncScene = false;
     }
 
     // Start is called before the first frame update
@@ -86,6 +92,7 @@ public class RoomMgr : MonoBehaviourPunCallbacks
             {
                 SoundManager.Instance.PlayUISound("Button");
                 IsReady = !IsReady;
+                PhotonNetwork.AutomaticallySyncScene = IsReady;
                 SendReady();
             });
 
@@ -132,11 +139,16 @@ public class RoomMgr : MonoBehaviourPunCallbacks
 
         PhotonNetwork.CurrentRoom.IsOpen = true;
         PhotonNetwork.CurrentRoom.IsVisible = true;
+
+        string msg = string.Format("{0}_<color=#00ff00>[ {1} ] 입장하였습니다.</color>", (int)ChatType.All, PhotonNetwork.LocalPlayer.NickName);
+        pv.RPC("ChatLogMsg", RpcTarget.Others, msg, 0);
     }    
 
     // Update is called once per frame
     void Update()
     {
+        PlayerCntTxt.text = string.Format("({0} / {1})", PhotonNetwork.CurrentRoom.PlayerCount, PhotonNetwork.CurrentRoom.MaxPlayers);
+
         RefreshPhotonTeam(); // 리스트 UI 갱신
     }
 
@@ -243,18 +255,18 @@ public class RoomMgr : MonoBehaviourPunCallbacks
 
     void SendReady()
     {
-        if (m_TeamInfoProps == null)
+        if (m_PlayerInfoProps == null)
         {
-            m_TeamInfoProps = new ExitGames.Client.Photon.Hashtable();
-            m_TeamInfoProps.Clear();
+            m_PlayerInfoProps = new ExitGames.Client.Photon.Hashtable();
+            m_PlayerInfoProps.Clear();
         }
 
-        if (m_TeamInfoProps.ContainsKey("IsReady") == true)
-            m_TeamInfoProps["IsReady"] = IsReady;
+        if (m_PlayerInfoProps.ContainsKey("IsReady") == true)
+            m_PlayerInfoProps["IsReady"] = IsReady;
         else
-            m_TeamInfoProps.Add("IsReady", IsReady);
+            m_PlayerInfoProps.Add("IsReady", IsReady);
 
-        PhotonNetwork.LocalPlayer.SetCustomProperties(m_TeamInfoProps);
+        PhotonNetwork.LocalPlayer.SetCustomProperties(m_PlayerInfoProps);
     }
 
     bool ReceiveReady(Player a_Player)
@@ -270,23 +282,23 @@ public class RoomMgr : MonoBehaviourPunCallbacks
 
     void SendSelectTeam(int a_Team, int a_Pos, bool IsEnterRoom = false)
     {
-        if (m_TeamInfoProps == null)
+        if (m_PlayerInfoProps == null)
         {
-            m_TeamInfoProps = new ExitGames.Client.Photon.Hashtable();
-            m_TeamInfoProps.Clear();
+            m_PlayerInfoProps = new ExitGames.Client.Photon.Hashtable();
+            m_PlayerInfoProps.Clear();
         }
 
-        if (m_TeamInfoProps.ContainsKey("MyTeam") == true)
-            m_TeamInfoProps["MyTeam"] = a_Team;
+        if (m_PlayerInfoProps.ContainsKey("MyTeam") == true)
+            m_PlayerInfoProps["MyTeam"] = a_Team;
         else
-            m_TeamInfoProps.Add("MyTeam", a_Team);
+            m_PlayerInfoProps.Add("MyTeam", a_Team);
 
-        if (m_TeamInfoProps.ContainsKey("TeamIdx") == true)
-            m_TeamInfoProps["TeamIdx"] = a_Pos;
+        if (m_PlayerInfoProps.ContainsKey("TeamIdx") == true)
+            m_PlayerInfoProps["TeamIdx"] = a_Pos;
         else
-            m_TeamInfoProps.Add("TeamIdx", a_Pos);
+            m_PlayerInfoProps.Add("TeamIdx", a_Pos);
 
-        PhotonNetwork.LocalPlayer.SetCustomProperties(m_TeamInfoProps);
+        PhotonNetwork.LocalPlayer.SetCustomProperties(m_PlayerInfoProps);
     }
 
     public void ReceiveSelectTeam(Player a_Player, ref int a_Team, ref int a_Pos)
@@ -306,14 +318,14 @@ public class RoomMgr : MonoBehaviourPunCallbacks
     {
         if (int.Parse(msg.Split('_')[0]) != (int)ChatType.All)
         {
-            if (int.Parse(msg.Split('_')[0]) != (int)m_TeamInfoProps["MyTeam"])
+            if (int.Parse(msg.Split('_')[0]) != (int)m_PlayerInfoProps["MyTeam"])
                 return;
         }
 
         if (int.Parse(msg.Split('_')[0]) == (int)ChatType.All)
             msg  = "<color=#FFFFFF>" + msg.Substring(2) + "</color>\n";
         else
-            msg = "<color=#00FF00>" + msg.Substring(2) + "</color>\n";
+            msg = "<color=#0099FF>" + msg.Substring(2) + "</color>\n";
 
         ChatLogTxt.text += msg;
     }
@@ -366,7 +378,7 @@ public class RoomMgr : MonoBehaviourPunCallbacks
 
         int Type = (int)ChatType.All;
         if (ChatTypeDrop.value == 1)
-            Type = (int)m_TeamInfoProps["MyTeam"];
+            Type = (int)m_PlayerInfoProps["MyTeam"];
 
         string msg = string.Format("{0}_{1} : {2}", Type, GlobalValue.nickName, InputChatIF.text);
         InputChatIF.text = string.Empty;

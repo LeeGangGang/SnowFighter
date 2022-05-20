@@ -138,12 +138,12 @@ public class PlayerCtrl : MonoBehaviourPunCallbacks, IPunObservable
 
             if (m_MyTeam == 0)
             {
-                m_NickName.text = "Red得 : " + m_PlayerId.ToString();
+                m_NickName.text = "Red得\n" + pv.Owner.NickName;
                 m_NickName.color = Color.red;
             }
             else
             {
-                m_NickName.text = "Blue得 : " + m_PlayerId.ToString();
+                m_NickName.text = "Blue得\n" + pv.Owner.NickName;
                 m_NickName.color = Color.blue;
             }
         }

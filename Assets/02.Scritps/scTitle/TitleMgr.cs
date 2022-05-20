@@ -7,8 +7,6 @@ using System.Text.RegularExpressions;
 
 public class TitleMgr : MonoBehaviour
 {
-    private string m_Msg = "";
-
     [Header("LoginPanel")]
     public GameObject m_LoginPanel;
     public InputField m_LoginIdIF;

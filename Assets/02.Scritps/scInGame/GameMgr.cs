@@ -54,10 +54,9 @@ public class GameMgr : MonoBehaviourPunCallbacks, IPunObservable
 
     void Awake()
     {
-        PhotonNetwork.AutomaticallySyncScene = true;
-
         Inst = this;
 
+        Time.timeScale = 1f;
         m_InGameTimer = 180f;
         m_WinTeam = -1;
 
@@ -90,7 +89,7 @@ public class GameMgr : MonoBehaviourPunCallbacks, IPunObservable
             m_ExitBtn.onClick.AddListener(ExitBtn_Click);
 
         // Photon 딜레이 때문인지 여기서 초기화
-        m_GameState = GameState.GS_Ready;
+        SendGState(GameState.GS_Ready);
         m_GameEndPanel.SetActive(false);
 
         SoundManager.Instance.PlayBGM("InGameBgm");
@@ -101,19 +100,17 @@ public class GameMgr : MonoBehaviourPunCallbacks, IPunObservable
     {
         m_SnowCntText.text = "x " + Camera.main.GetComponent<CameraCtrl>().Player.GetComponent<PlayerCtrl>().m_CurSnowCnt.ToString();
         m_InGameTmText.text = System.TimeSpan.FromSeconds(m_InGameTimer).ToString(@"mm\:ss");
-
+        
         if (IsGamePossible() == false)
             return;
-        
+
         switch (m_GameState)
         {
             case GameState.GS_Ready:
                 if (GameStartObserver())
                 {
                     if (PhotonNetwork.IsMasterClient) // 마스터 클라이언트만
-                    {
                         SendGState(GameState.GS_Playing);
-                    }
                 }
                 break;
             case GameState.GS_Playing:
@@ -157,8 +154,6 @@ public class GameMgr : MonoBehaviourPunCallbacks, IPunObservable
     {
         m_GameState = GameState.Gs_GameExit;
         m_GameEndPanel.SetActive(true);
-        if (PhotonNetwork.IsMasterClient == false)
-            m_ExitBtn.gameObject.SetActive(false);
 
         int BgmIdx = Random.Range(0, 3);
         if (!Camera.main.GetComponent<CameraCtrl>().Player.GetComponent<PlayerCtrl>().IsMyTeam(m_WinTeam))
@@ -172,11 +167,15 @@ public class GameMgr : MonoBehaviourPunCallbacks, IPunObservable
             m_GameEndInfoTxt.text = "Red팀 승리";
         else
             m_GameEndInfoTxt.text = "Blue팀 승리";
+
+        Time.timeScale = 0f;
     }
 
     void ExitBtn_Click()
     {
         SoundManager.Instance.PlayUISound("Button");
+
+        ClearHashTable();
 
         StartCoroutine(LoadRoomScene());
     }
@@ -225,7 +224,8 @@ public class GameMgr : MonoBehaviourPunCallbacks, IPunObservable
         if (m_GameState == GameState.Gs_GameExit)
             return false;
 
-        m_GameState = ReceiveGState();
+        if (!PhotonNetwork.IsMasterClient)
+            m_GameState = ReceiveGState();
 
         return true;
     }
@@ -281,7 +281,9 @@ public class GameMgr : MonoBehaviourPunCallbacks, IPunObservable
             }
 
             // Photon 딜레이 때문인지 여기서 초기화
-            m_GameState = GameState.GS_Ready;
+            if (PhotonNetwork.IsMasterClient)
+                SendGState(GameState.GS_Ready);
+
             m_GameEndPanel.SetActive(false);
         }
 
@@ -317,8 +319,17 @@ public class GameMgr : MonoBehaviourPunCallbacks, IPunObservable
         PhotonNetwork.CurrentRoom.SetCustomProperties(m_WinTeamProps);
     }
 
+    void ClearHashTable()
+    {
+        m_StateProps.Clear();
+        m_WinTeamProps.Clear();
+    }
+
     void SendGState(GameState a_GState)
     {
+        if (PhotonNetwork.IsMasterClient)
+            m_GameState = a_GState;
+
         if (m_StateProps == null)
         {
             m_StateProps = new ExitGames.Client.Photon.Hashtable();

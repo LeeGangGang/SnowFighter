@@ -117,7 +117,6 @@
     <None Include="Assets\Photon\PhotonLibs\netstandard2.0\Photon3Unity3D.xml" />
     <None Include="Assets\04.Models\Frost\HowToUse.txt" />
     <None Include="Assets\Photon\PhotonUnityNetworking\changelog.txt" />
-    <None Include="Assets\Sounds\Melodious orchestra music\ReadMe.txt" />
     <None Include="Assets\Photon\PhotonLibs\WebSocket\websocket-sharp.dll" />
     <None Include="Assets\Photon\PhotonLibs\changes-library.txt" />
     <None Include="Assets\Photon\PhotonUnityNetworking\readme.txt" />

@@ -12,9 +12,6 @@ public class PhotonInit : MonoBehaviourPunCallbacks
 
     public Button m_PlayerSettingBtn;
     private GameObject m_PlayerSettingPanel;
-    bool IsShow = false;
-    float MvSpeed_PS = 2000f;
-    Vector3 ShowPos_PS = new Vector3(420f, 0f, 0f);
 
     public Button m_ConfigBtn;
     public GameObject m_Config_Pop;
@@ -35,8 +32,6 @@ public class PhotonInit : MonoBehaviourPunCallbacks
 
     void Awake()
     {
-        //PhotonNetwork.SendRate = 40;            
-        //PhotonNetwork.SerializationRate = 20;
         m_PlayerSettingPanel = Instantiate(Resources.Load("PlayerSetting") as GameObject, GameObject.Find("Canvas").transform);
         m_PlayerSettingPanel.transform.localPosition = new Vector3(395f, 0f, 0f);
         
@@ -55,6 +50,8 @@ public class PhotonInit : MonoBehaviourPunCallbacks
     // Start is called before the first frame update
     void Start()
     {
+        SoundManager.Instance.PlayBGM("LobbyBgm");
+
         if (!ReferenceEquals(m_QuickMatch_Btn, null))
             m_QuickMatch_Btn.onClick.AddListener(QuickMatch_Click);
 
