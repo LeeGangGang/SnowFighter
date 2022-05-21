@@ -147,7 +147,8 @@ public class RoomMgr : MonoBehaviourPunCallbacks
     // Update is called once per frame
     void Update()
     {
-        PlayerCntTxt.text = string.Format("({0} / {1})", PhotonNetwork.CurrentRoom.PlayerCount, PhotonNetwork.CurrentRoom.MaxPlayers);
+        if (PhotonNetwork.CurrentRoom != null)
+            PlayerCntTxt.text = string.Format("({0} / {1})", PhotonNetwork.CurrentRoom.PlayerCount, PhotonNetwork.CurrentRoom.MaxPlayers);
 
         RefreshPhotonTeam(); // 리스트 UI 갱신
     }

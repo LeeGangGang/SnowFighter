@@ -45,9 +45,11 @@ public class CreateRoomMgr : MonoBehaviour
         RoomOptions roomOptions = new RoomOptions();
         roomOptions.IsOpen = true;
         roomOptions.IsVisible = true;
-        roomOptions.MaxPlayers = 8;
+        roomOptions.MaxPlayers = byte.Parse("8");
+        roomOptions.CustomRoomProperties = new ExitGames.Client.Photon.Hashtable() { { "Password", m_RoomPW_If.text } };
+        roomOptions.CustomRoomPropertiesForLobby = new string[] { "Password" };
 
-        PhotonNetwork.CreateRoom(a_roomName, roomOptions, TypedLobby.Default);
+        PhotonNetwork.CreateRoom(a_roomName, roomOptions);
     }
 
     private void Cancel_Click()

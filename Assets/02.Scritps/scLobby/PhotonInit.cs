@@ -93,7 +93,7 @@ public class PhotonInit : MonoBehaviourPunCallbacks
         roomOptions.IsVisible = true; // 로비에서 룸의 노출 여부
         roomOptions.MaxPlayers = 8; // 룸에 입장할 수 있는 최대 접속자 수
 
-        string a_RoomName = string.Format("_{0}", GlobalValue.nickName);
+        string a_RoomName = string.Format("_{0} 의 방", GlobalValue.nickName);
         PhotonNetwork.CreateRoom(a_RoomName, roomOptions, TypedLobby.Default);
     }
 
@@ -128,7 +128,10 @@ public class PhotonInit : MonoBehaviourPunCallbacks
 
         //로컬 플레이어의 이름을 설정
         PhotonNetwork.LocalPlayer.NickName = m_PlayerName_Txt.text;
-        PhotonNetwork.JoinRandomRoom();
+
+        byte maxPlayers = byte.Parse("8");
+        ExitGames.Client.Photon.Hashtable customProperties = new ExitGames.Client.Photon.Hashtable() { { "Password", "" } };
+        PhotonNetwork.JoinRandomRoom(customProperties, maxPlayers);
     }
 
     //룸 씬으로 이동하는 코루틴 함수

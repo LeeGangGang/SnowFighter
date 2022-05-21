@@ -71,21 +71,21 @@ public class SnowBowlingBtnCtrl : MonoBehaviour
                 {
                     if (m_PlayerCtrl.transform.Find("SnowBowling") == null)
                     {
-                        m_PlayerCtrl.m_BowMvSpeed = 150.0f;
-                        Vector3 BallPos = m_PlayerTr.position + (m_PlayerTr.forward * 2.0f);
+                        m_PlayerCtrl.m_BowMvSpeed = 50f;
+                        Vector3 BallPos = m_PlayerTr.position + (m_PlayerTr.forward * 2f);
                         Quaternion BallRot = m_PlayerTr.rotation;
                         m_SkillCtrl.CreateSnowBowling(BallPos, BallRot);
                         m_PlayerCtrl.m_CurSnowCnt--;
                     }
 
-                    m_PlayerCtrl.m_BowMvSpeed += Time.deltaTime * 30.0f;
-                    if (m_PlayerCtrl.m_BowMvSpeed > 300.0f)
-                        m_PlayerCtrl.m_BowMvSpeed = 300.0f;
+                    m_PlayerCtrl.m_BowMvSpeed += Time.deltaTime * 10f;
+                    if (m_PlayerCtrl.m_BowMvSpeed > 120f)
+                        m_PlayerCtrl.m_BowMvSpeed = 120f;
                 }
                 else
                 {
                     EndSnowBowling();
-                    m_SkillCtrl.RollingSnow( m_PlayerTr.forward, m_PlayerCtrl.m_BowMvSpeed / 10.0f );
+                    m_SkillCtrl.RollingSnow(m_PlayerTr.forward, m_PlayerCtrl.m_BowMvSpeed / 10f);
                 }
             }
         }
@@ -136,7 +136,7 @@ public class SnowBowlingBtnCtrl : MonoBehaviour
 
         m_CurCoolTime = m_CoolTime;
         m_IsCasting = false;
-        m_CurCastTime = 0.0f;
+        m_CurCastTime = 0f;
         GameMgr.Inst.CastingBar(false);
         m_PlayerCtrl.m_CurStatus = PlayerState.Idle;
     }
@@ -151,8 +151,8 @@ public class SnowBowlingBtnCtrl : MonoBehaviour
         }
         else
         {
-            m_CurCoolTime = 0.0f;
-            m_SkillCoolImg.fillAmount = 0.0f;
+            m_CurCoolTime = 0f;
+            m_SkillCoolImg.fillAmount = 0f;
             m_ThisBtn.enabled = true;
         }
     }

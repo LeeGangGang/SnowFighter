@@ -53,6 +53,9 @@ public class CatapultSnowBallCtrl : MonoBehaviour
 
     void OnDestroy()
     {
+        if (!IsDown)
+            return;
+
         float Volume = SoundManager.Instance.GetDistVolume(this.transform.position) * 0.3f;
         SoundManager.Instance.PlayEffSound("CatapultBomb", Volume);
 

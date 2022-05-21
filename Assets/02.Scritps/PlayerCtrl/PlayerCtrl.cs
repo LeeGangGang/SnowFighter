@@ -36,11 +36,11 @@ public class PlayerCtrl : MonoBehaviourPunCallbacks, IPunObservable
     AnimState m_NetAnimState = AnimState.Idle;
 
     public PlayerState m_CurStatus = PlayerState.Idle;
-    public float m_BowMvSpeed = 150.0f; // 눈굴리기 최소 이동속도 (최대 300)
+    public float m_BowMvSpeed = 50.0f; // 눈굴리기 최소 이동속도 (최대 120)
 
     [HideInInspector] public Transform tr;
     public Vector3 moveDir = Vector3.zero;
-    private float moveSpeed = 150.0f;
+    private float moveSpeed = 50.0f;
     private const float rotSpeed = 3.0f;
 
     private CharacterController controller = null;
@@ -121,6 +121,11 @@ public class PlayerCtrl : MonoBehaviourPunCallbacks, IPunObservable
                 IDmg.DestroyThisObj();
             }
         }
+        else if (other.CompareTag("Water"))
+        {
+            // 물에 빠져 사망
+            GetDamage(m_MaxHp, m_PlayerId);
+        }
     }
 
     public void Init()
@@ -186,7 +191,8 @@ public class PlayerCtrl : MonoBehaviourPunCallbacks, IPunObservable
         }
         else
         {
-            MySetAnim(AnimState.Hit);
+            if (m_CurStatus != PlayerState.Catapult)
+                MySetAnim(AnimState.Hit);
         }
     }
 
@@ -267,25 +273,17 @@ public class PlayerCtrl : MonoBehaviourPunCallbacks, IPunObservable
 
         if (m_CurStatus == PlayerState.Bowling)
         {
-            // the vector that we want to measure an angle from
-            Vector3 referenceForward = tr.forward; /* some vector that is not Vector3.up */
-            // the vector perpendicular to referenceForward (90 degrees clockwise)
-            // (used to determine if angle is positive or negative)
-            Vector3 referenceRight = Vector3.Cross(Vector3.up, referenceForward);
-            // the vector of interest
-            Vector3 newDirection = moveDir;/* some vector that we're interested in */
-            // Get the angle in degrees between 0 and 180
-            float angle = Vector3.Angle(newDirection, referenceForward);
-            // Determine if the degree value should be negative.  Here, a positive value
-            // from the dot product means that our vector is on the right of the reference vector   
-            // whereas a negative value means we're on the left.
-            float sign = Mathf.Sign(Vector3.Dot(newDirection, referenceRight));
+            Vector3 a_Forward = tr.forward;
+            Vector3 a_Cross = Vector3.Cross(Vector3.up, a_Forward); // 외적
+            Vector3 a_Dir = moveDir;
+            float angle = Vector3.Angle(a_Dir, a_Forward); // retrun : 0~180
+            float sign = Mathf.Sign(Vector3.Dot(a_Dir, a_Cross));
             float finalAngle = sign * angle;
 
-            float a_MoveAngle = 0f;
-            if (finalAngle > 0)
+            float a_MoveAngle = finalAngle / 90f;
+            if (a_MoveAngle > 1f)
                 a_MoveAngle = 1f;
-            else if (finalAngle < 0)
+            else if (a_MoveAngle < -1f)
                 a_MoveAngle = -1f;
 
             Vector3 a_Rot = tr.rotation.eulerAngles;
