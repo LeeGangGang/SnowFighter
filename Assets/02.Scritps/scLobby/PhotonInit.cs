@@ -92,6 +92,8 @@ public class PhotonInit : MonoBehaviourPunCallbacks
         roomOptions.IsOpen = true; // 입장 가능 여부
         roomOptions.IsVisible = true; // 로비에서 룸의 노출 여부
         roomOptions.MaxPlayers = 8; // 룸에 입장할 수 있는 최대 접속자 수
+        roomOptions.CustomRoomProperties = new ExitGames.Client.Photon.Hashtable() { { "Password", "" } };
+        roomOptions.CustomRoomPropertiesForLobby = new string[] { "Password" };
 
         string a_RoomName = string.Format("_{0} 의 방", GlobalValue.nickName);
         PhotonNetwork.CreateRoom(a_RoomName, roomOptions, TypedLobby.Default);
@@ -122,7 +124,7 @@ public class PhotonInit : MonoBehaviourPunCallbacks
     }
 
     //Join Random Room 버튼 클릭 시 호출되는 함수
-    public void QuickMatch_Click() //3번 방 입장 요청 버튼 누름
+    public void QuickMatch_Click()
     {
         SoundManager.Instance.PlayUISound("Button");
 

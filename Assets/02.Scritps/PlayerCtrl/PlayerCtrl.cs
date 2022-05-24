@@ -124,7 +124,7 @@ public class PlayerCtrl : MonoBehaviourPunCallbacks, IPunObservable
         else if (other.CompareTag("Water"))
         {
             // 물에 빠져 사망
-            GetDamage(m_MaxHp, m_PlayerId);
+            GetDamage(m_CurHp, -1);
         }
     }
 

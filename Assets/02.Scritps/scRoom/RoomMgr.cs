@@ -214,6 +214,9 @@ public class RoomMgr : MonoBehaviourPunCallbacks
 
     IEnumerator LoadInGameScene() //최종 InGame 씬 로딩
     {
+        foreach (Player a_Player in PhotonNetwork.PlayerList)
+            a_Player.CustomProperties["IsReady"] = false;
+        
         PhotonNetwork.CurrentRoom.IsOpen = false;
         PhotonNetwork.CurrentRoom.IsVisible = false;
 
